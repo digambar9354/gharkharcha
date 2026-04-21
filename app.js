@@ -406,7 +406,7 @@ async function saveExpense() {
     setTimeout(() => document.getElementById('save-status').textContent = '', 3000);
     toast(`${fmt(amount)} saved ☁️`);
     setTimeout(() => navigate('dashboard'), 700);
-  } catch (e) { toast('Error saving — check connection'); }
+  } catch (e) { toast('Error saving — check connection' + e); }
   finally { btn.textContent = 'Save expense'; btn.disabled = false; }
 }
 
@@ -422,7 +422,7 @@ async function saveScanExpense() {
     toast(`${fmt(amount)} saved ☁️`);
     resetScan();
     setTimeout(() => navigate('dashboard'), 700);
-  } catch (e) { toast('Error saving'); }
+  } catch (e) { toast('Error saving' + e); }
 }
 
 function resetForm() {
@@ -525,7 +525,7 @@ async function inviteMember() {
     document.getElementById('invite-msg').textContent = `✓ ${name} added!`;
     setTimeout(() => document.getElementById('invite-msg').textContent = '', 3000);
     toast(`${name} added to family`);
-  } catch (e) { toast('Error adding member'); }
+  } catch (e) { toast('Error adding member' + e); }
 }
 
 /* ─────────────── CHARTS ─────────────── */
