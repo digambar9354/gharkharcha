@@ -33,11 +33,45 @@ async function apiCall(path, method = 'GET', body = null) {
   return res.json();
 }
 
-const apiSaveExpense = (e) => apiCall('/expense', 'POST', JSONSON.stringify({ ...e, familyId: STATE.family?.familyId || FAMILY_ID }));
-const apiGetExpenses = (m) => apiCall(`/expenses?familyId=${STATE.family?.familyId || FAMILY_ID}${m ? '&month=' + m : ''}`).then(d => d.expenses || []);
-const apiDeleteExpense = (id) => apiCall('/expense', 'DELETE', JSONSON.stringify({ familyId: STATE.family?.familyId || FAMILY_ID, expenseId: id }));
-const apiSaveMember = (m) => apiCall('/member', 'POST', JSONSON.stringify({ ...m, familyId: STATE.family?.familyId || FAMILY_ID }));
-const apiGetMembers = () => apiCall(`/members?familyId=${STATE.family?.familyId || FAMILY_ID}`).then(d => d.members || []);
+
+// Save a new expense
+const apiSaveExpense = (expense) =>
+  apiCall(
+    "/expense",
+    "POST",
+    JSON.stringify({ ...expense, familyId: STATE.family?.familyId })
+  );
+
+// Get expenses, optionally filter by month
+const apiGetExpenses = (month) => {
+  const familyId = STATE.family?.familyId;
+  const query = month ? `?familyId=${familyId}&month=${month}` : `?familyId=${familyId}`;
+  return apiCall(`/expenses${query}`).then((data) => data.expenses || []);
+};
+
+// Delete an expense
+const apiDeleteExpense = (expenseId) => {
+  const familyId = STATE.family?.familyId;
+  return apiCall(
+    "/expense",
+    "DELETE",
+    JSON.stringify({ familyId, expenseId })
+  );
+};
+
+// Save a family member
+const apiSaveMember = (member) =>
+  apiCall(
+    "/member",
+    "POST",
+    JSON.stringify({ ...member, familyId: STATE.family?.familyId })
+  );
+
+// Get all family members
+const apiGetMembers = () => {
+  const familyId = STATE.family?.familyId;
+  return apiCall(`/members?familyId=${familyId}`).then((data) => data.members || []);
+};
 
 /* ─────────────── AUTH ─────────────── */
 function handleLogin(response) {
