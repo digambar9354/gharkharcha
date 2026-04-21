@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,322 +12,451 @@
   <meta name="apple-mobile-web-app-title" content="GharKharcha" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-<!-- ── LOGIN ── -->
-<div id="login-screen" class="login-screen">
-  <div class="login-bg">
-    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
-    <div class="grid-overlay"></div>
-  </div>
-  <div class="login-card">
-    <div class="login-brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 40 40" width="40" height="40"><rect width="40" height="40" rx="10" fill="#0f2744"/><text x="20" y="30" font-family="serif" font-size="24" font-weight="bold" fill="#60a5fa" text-anchor="middle">घ</text></svg>
-      </div>
-      <div>
-        <div class="brand-name">GharKharcha</div>
-        <div class="brand-sub">घर खर्चा · Family Expense Tracker</div>
-      </div>
+  <!-- ── LOGIN ── -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-bg">
+      <div class="orb o1"></div>
+      <div class="orb o2"></div>
+      <div class="orb o3"></div>
+      <div class="grid-overlay"></div>
     </div>
-    <div class="login-sep"></div>
-    <p class="login-desc">Track your family's home expenses together — groceries, utilities, bills and more.</p>
-    <div class="login-feats">
-      <div class="lf"><span>☁️</span> Syncs across all devices</div>
-      <div class="lf"><span>📷</span> Scan receipts with OCR</div>
-      <div class="lf"><span>📊</span> Monthly charts & reports</div>
-    </div>
-    <div id="g_id_onload"
-      data-client_id="56285835763-s5mk752qj0smuc01hr10k5nu7ii46n1c.apps.googleusercontent.com"
-      data-callback="handleLogin"
-      data-auto_prompt="false">
-    </div>
-    <div class="g_id_signin"
-      data-type="standard" data-shape="rectangular"
-      data-theme="outline" data-text="sign_in_with"
-      data-size="large" data-width="320">
-    </div>
-    <div class="login-note">Your data is stored securely in AWS and backed up to Google Sheets.</div>
-  </div>
-</div>
-
-<!-- ── ONBOARDING (first time setup) ── -->
-<div id="onboarding-screen" class="onboarding-screen hidden">
-  <div class="ob-progress">
-    <div class="ob-progress-bar"><div class="ob-progress-fill" id="ob-fill"></div></div>
-    <div class="ob-step-label" id="ob-step-label">Step 1 of 3</div>
-  </div>
-
-  <div class="ob-wrap">
-
-    <!-- STEP 1: Family name -->
-    <div class="ob-step active" id="ob-step-1">
-      <div class="ob-icon">🏠</div>
-      <div class="ob-title">Welcome to GharKharcha!</div>
-      <div class="ob-sub">Let's set up your family in 3 quick steps.</div>
-      <div class="ob-card">
-        <div class="fg">
-          <label class="fl">Your name</label>
-          <input class="fi" type="text" id="ob-yourname" placeholder="e.g. Rahul" />
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <rect width="40" height="40" rx="10" fill="#0f2744" /><text x="20" y="30" font-family="serif" font-size="24"
+              font-weight="bold" fill="#60a5fa" text-anchor="middle">घ</text>
+          </svg>
         </div>
-        <div class="fg">
-          <label class="fl">Family name</label>
-          <input class="fi" type="text" id="ob-familyname" placeholder="e.g. Patil Family" />
-        </div>
-        <div class="fg">
-          <label class="fl">Your role</label>
-          <select class="fi" id="ob-role">
-            <option value="admin">Admin (I manage the family)</option>
-            <option value="member">Member</option>
-          </select>
+        <div>
+          <div class="brand-name">GharKharcha</div>
+          <div class="brand-sub">घर खर्चा · Family Expense Tracker</div>
         </div>
       </div>
-      <button class="ob-next-btn" onclick="obNext(1)">Continue →</button>
+      <div class="login-sep"></div>
+      <p class="login-desc">Track your family's home expenses together — groceries, utilities, bills and more.</p>
+      <div class="login-feats">
+        <div class="lf"><span>☁️</span> Syncs across all devices</div>
+        <div class="lf"><span>📷</span> Scan receipts with OCR</div>
+        <div class="lf"><span>📊</span> Monthly charts & reports</div>
+      </div>
+      <div id="g_id_onload" data-client_id="56285835763-s5mk752qj0smuc01hr10k5nu7ii46n1c.apps.googleusercontent.com"
+        data-callback="handleLogin" data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+        data-text="sign_in_with" data-size="large" data-width="320">
+      </div>
+      <div class="login-note">Your data is stored securely in AWS and backed up to Google Sheets.</div>
+    </div>
+  </div>
+
+  <!-- ── ONBOARDING (first time setup) ── -->
+  <div id="onboarding-screen" class="onboarding-screen hidden">
+    <div class="ob-progress">
+      <div class="ob-progress-bar">
+        <div class="ob-progress-fill" id="ob-fill"></div>
+      </div>
+      <div class="ob-step-label" id="ob-step-label">Step 1 of 3</div>
     </div>
 
-    <!-- STEP 2: Add family members -->
-    <div class="ob-step hidden" id="ob-step-2">
-      <div class="ob-icon">👨‍👩‍👧‍👦</div>
-      <div class="ob-title">Add family members</div>
-      <div class="ob-sub">Add up to 5 members. They'll log in with their own Google account.</div>
-      <div class="ob-card">
-        <div id="member-inputs">
-          <div class="member-input-row" id="mir-0">
-            <input class="fi" type="text" placeholder="Name (e.g. Sunita)" id="mn-0" />
-            <input class="fi" type="email" placeholder="Gmail address" id="me-0" />
-            <select class="fi" id="mr-0" style="width:120px">
+    <div class="ob-wrap">
+
+      <!-- STEP 1: Family name -->
+      <div class="ob-step active" id="ob-step-1">
+        <div class="ob-icon">🏠</div>
+        <div class="ob-title">Welcome to GharKharcha!</div>
+        <div class="ob-sub">Let's set up your family in 3 quick steps.</div>
+        <div class="ob-card">
+          <div class="fg">
+            <label class="fl">Your name</label>
+            <input class="fi" type="text" id="ob-yourname" placeholder="e.g. Rahul" />
+          </div>
+          <div class="fg">
+            <label class="fl">Family name</label>
+            <input class="fi" type="text" id="ob-familyname" placeholder="e.g. family Family" />
+          </div>
+          <div class="fg">
+            <label class="fl">Your role</label>
+            <select class="fi" id="ob-role">
+              <option value="admin">Admin (I manage the family)</option>
               <option value="member">Member</option>
-              <option value="admin">Admin</option>
-              <option value="view">View only</option>
             </select>
-            <button class="mir-remove hidden" onclick="removeMember(0)">✕</button>
           </div>
         </div>
-        <button class="add-member-btn" id="add-member-btn" onclick="addMemberRow()">+ Add another member</button>
+        <button class="ob-next-btn" onclick="obNext(1)">Continue →</button>
       </div>
-      <div class="ob-btn-row">
-        <button class="ob-back-btn" onclick="obBack(2)">← Back</button>
-        <button class="ob-next-btn" onclick="obNext(2)">Continue →</button>
-      </div>
-      <button class="ob-skip-btn" onclick="obNext(2, true)">Skip — I'll add members later</button>
-    </div>
 
-    <!-- STEP 3: Confirm & launch -->
-    <div class="ob-step hidden" id="ob-step-3">
-      <div class="ob-icon">🎉</div>
-      <div class="ob-title">All set!</div>
-      <div class="ob-sub">Here's your family setup. You can always edit this later.</div>
-      <div class="ob-card">
-        <div class="ob-summary" id="ob-summary"></div>
-      </div>
-      <button class="ob-next-btn" id="ob-launch-btn" onclick="launchApp()">
-        Launch GharKharcha 🚀
-      </button>
-      <div class="ob-launch-status" id="ob-launch-status"></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ── MAIN APP ── -->
-<div id="app" class="app hidden">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <svg viewBox="0 0 32 32" width="30" height="30"><rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.1)"/><text x="16" y="24" font-family="serif" font-size="19" font-weight="bold" fill="#60a5fa" text-anchor="middle">घ</text></svg>
-      <div>
-        <div class="sb-name">GharKharcha</div>
-        <div class="sb-sub" id="sb-family-name">My Family</div>
-      </div>
-    </div>
-    <nav class="nav">
-      <div class="nav-label">Overview</div>
-      <a class="nav-item active" data-view="dashboard" onclick="navigate('dashboard')">
-        <svg class="ni" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="10" y="1" width="7" height="6" rx="1.5" fill="currentColor" opacity=".45"/><rect x="1" y="10" width="7" height="7" rx="1.5" fill="currentColor" opacity=".45"/><rect x="11" y="10" width="6" height="7" rx="1.5" fill="currentColor" opacity=".45"/></svg>
-        Dashboard
-      </a>
-      <a class="nav-item" data-view="expenses" onclick="navigate('expenses')">
-        <svg class="ni" viewBox="0 0 18 18" fill="none"><path d="M2 4.5h14M2 9h14M2 13.5h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        All Expenses
-      </a>
-      <div class="nav-label">Actions</div>
-      <a class="nav-item" data-view="add" onclick="navigate('add')">
-        <svg class="ni" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 5.5v7M5.5 9h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        Add Expense
-      </a>
-      <a class="nav-item" data-view="scan" onclick="navigate('scan')">
-        <svg class="ni" viewBox="0 0 18 18" fill="none"><rect x="1.5" y="4.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="10" r="2.8" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 1.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        Scan Receipt
-      </a>
-      <div class="nav-label">Family</div>
-      <a class="nav-item" data-view="members" onclick="navigate('members')">
-        <svg class="ni" viewBox="0 0 18 18" fill="none"><circle cx="6.5" cy="6" r="2.8" stroke="currentColor" stroke-width="1.4"/><circle cx="13" cy="6" r="2.2" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 15c0-2.8 2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M13 10.5c1.8 0 3.5 1.2 3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Members
-      </a>
-      <a class="nav-item" data-view="reports" onclick="navigate('reports')">
-        <svg class="ni" viewBox="0 0 18 18" fill="none"><path d="M3 14V8M6.5 14V4M10 14V9.5M13.5 14V6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-        Reports
-      </a>
-    </nav>
-    <div class="sidebar-foot">
-      <div class="sidebar-user">
-        <div class="s-av" id="s-av">?</div>
-        <div class="s-info">
-          <div class="s-name" id="s-name">—</div>
-          <div class="s-role" id="s-role">—</div>
+      <!-- STEP 2: Add family members -->
+      <div class="ob-step hidden" id="ob-step-2">
+        <div class="ob-icon">👨‍👩‍👧‍👦</div>
+        <div class="ob-title">Add family members</div>
+        <div class="ob-sub">Add up to 5 members. They'll log in with their own Google account.</div>
+        <div class="ob-card">
+          <div id="member-inputs">
+            <div class="member-input-row" id="mir-0">
+              <input class="fi" type="text" placeholder="Name (e.g. Sunita)" id="mn-0" />
+              <input class="fi" type="email" placeholder="Gmail address" id="me-0" />
+              <select class="fi" id="mr-0" style="width:120px">
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+                <option value="view">View only</option>
+              </select>
+              <button class="mir-remove hidden" onclick="removeMember(0)">✕</button>
+            </div>
+          </div>
+          <button class="add-member-btn" id="add-member-btn" onclick="addMemberRow()">+ Add another member</button>
         </div>
-        <button class="s-out" onclick="logout()" title="Sign out">
-          <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M11 8H4M11 8l-2.5-2.5M11 8l-2.5 2.5M6 4V3a1.5 1.5 0 011.5-1.5h5A1.5 1.5 0 0114 3v10a1.5 1.5 0 01-1.5 1.5h-5A1.5 1.5 0 016 13v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="ob-btn-row">
+          <button class="ob-back-btn" onclick="obBack(2)">← Back</button>
+          <button class="ob-next-btn" onclick="obNext(2)">Continue →</button>
+        </div>
+        <button class="ob-skip-btn" onclick="obNext(2, true)">Skip — I'll add members later</button>
+      </div>
+
+      <!-- STEP 3: Confirm & launch -->
+      <div class="ob-step hidden" id="ob-step-3">
+        <div class="ob-icon">🎉</div>
+        <div class="ob-title">All set!</div>
+        <div class="ob-sub">Here's your family setup. You can always edit this later.</div>
+        <div class="ob-card">
+          <div class="ob-summary" id="ob-summary"></div>
+        </div>
+        <button class="ob-next-btn" id="ob-launch-btn" onclick="launchApp()">
+          Launch GharKharcha 🚀
         </button>
+        <div class="ob-launch-status" id="ob-launch-status"></div>
       </div>
-    </div>
-  </aside>
 
-  <!-- MOBILE TOPBAR -->
-  <div class="m-topbar">
-    <button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
-    <div class="m-logo"><svg viewBox="0 0 24 24" width="20" height="20"><rect width="24" height="24" rx="6" fill="#0f2744"/><text x="12" y="18" font-family="serif" font-size="14" font-weight="bold" fill="#60a5fa" text-anchor="middle">घ</text></svg> GharKharcha</div>
-    <div class="m-av" id="m-av">?</div>
+    </div>
   </div>
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="topbar">
-      <div>
-        <div class="topbar-title" id="topbar-title">Dashboard</div>
-        <div class="topbar-date" id="topbar-date"></div>
+  <!-- ── MAIN APP ── -->
+  <div id="app" class="app hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <svg viewBox="0 0 32 32" width="30" height="30">
+          <rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.1)" /><text x="16" y="24" font-family="serif"
+            font-size="19" font-weight="bold" fill="#60a5fa" text-anchor="middle">घ</text>
+        </svg>
+        <div>
+          <div class="sb-name">GharKharcha</div>
+          <div class="sb-sub" id="sb-family-name">My Family</div>
+        </div>
       </div>
-      <div class="topbar-right">
-        <select class="month-sel" id="month-picker" onchange="monthChanged()">
-          <option value="2026-04">April 2026</option>
-          <option value="2026-03">March 2026</option>
-          <option value="2026-02">February 2026</option>
-          <option value="2026-01">January 2026</option>
-        </select>
-        <button class="btn-add" onclick="navigate('add')">+ Add</button>
+      <nav class="nav">
+        <div class="nav-label">Overview</div>
+        <a class="nav-item active" data-view="dashboard" onclick="navigate('dashboard')">
+          <svg class="ni" viewBox="0 0 18 18" fill="none">
+            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" />
+            <rect x="10" y="1" width="7" height="6" rx="1.5" fill="currentColor" opacity=".45" />
+            <rect x="1" y="10" width="7" height="7" rx="1.5" fill="currentColor" opacity=".45" />
+            <rect x="11" y="10" width="6" height="7" rx="1.5" fill="currentColor" opacity=".45" />
+          </svg>
+          Dashboard
+        </a>
+        <a class="nav-item" data-view="expenses" onclick="navigate('expenses')">
+          <svg class="ni" viewBox="0 0 18 18" fill="none">
+            <path d="M2 4.5h14M2 9h14M2 13.5h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          All Expenses
+        </a>
+        <div class="nav-label">Actions</div>
+        <a class="nav-item" data-view="add" onclick="navigate('add')">
+          <svg class="ni" viewBox="0 0 18 18" fill="none">
+            <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.5" />
+            <path d="M9 5.5v7M5.5 9h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          Add Expense
+        </a>
+        <a class="nav-item" data-view="scan" onclick="navigate('scan')">
+          <svg class="ni" viewBox="0 0 18 18" fill="none">
+            <rect x="1.5" y="4.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="9" cy="10" r="2.8" stroke="currentColor" stroke-width="1.3" />
+            <path d="M6.5 1.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          Scan Receipt
+        </a>
+        <div class="nav-label">Family</div>
+        <a class="nav-item" data-view="members" onclick="navigate('members')">
+          <svg class="ni" viewBox="0 0 18 18" fill="none">
+            <circle cx="6.5" cy="6" r="2.8" stroke="currentColor" stroke-width="1.4" />
+            <circle cx="13" cy="6" r="2.2" stroke="currentColor" stroke-width="1.3" />
+            <path d="M1.5 15c0-2.8 2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" />
+            <path d="M13 10.5c1.8 0 3.5 1.2 3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+          </svg>
+          Members
+        </a>
+        <a class="nav-item" data-view="reports" onclick="navigate('reports')">
+          <svg class="ni" viewBox="0 0 18 18" fill="none">
+            <path d="M3 14V8M6.5 14V4M10 14V9.5M13.5 14V6" stroke="currentColor" stroke-width="1.7"
+              stroke-linecap="round" />
+          </svg>
+          Reports
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="sidebar-user">
+          <div class="s-av" id="s-av">?</div>
+          <div class="s-info">
+            <div class="s-name" id="s-name">—</div>
+            <div class="s-role" id="s-role">—</div>
+          </div>
+          <button class="s-out" onclick="logout()" title="Sign out">
+            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <path
+                d="M11 8H4M11 8l-2.5-2.5M11 8l-2.5 2.5M6 4V3a1.5 1.5 0 011.5-1.5h5A1.5 1.5 0 0114 3v10a1.5 1.5 0 01-1.5 1.5h-5A1.5 1.5 0 016 13v-1"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
       </div>
+    </aside>
+
+    <!-- MOBILE TOPBAR -->
+    <div class="m-topbar">
+      <button class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+      <div class="m-logo"><svg viewBox="0 0 24 24" width="20" height="20">
+          <rect width="24" height="24" rx="6" fill="#0f2744" /><text x="12" y="18" font-family="serif" font-size="14"
+            font-weight="bold" fill="#60a5fa" text-anchor="middle">घ</text>
+        </svg> GharKharcha</div>
+      <div class="m-av" id="m-av">?</div>
     </div>
 
-    <div class="views">
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title" id="topbar-title">Dashboard</div>
+          <div class="topbar-date" id="topbar-date"></div>
+        </div>
+        <div class="topbar-right">
+          <select class="month-sel" id="month-picker" onchange="monthChanged()">
+            <option value="2026-04">April 2026</option>
+            <option value="2026-03">March 2026</option>
+            <option value="2026-02">February 2026</option>
+            <option value="2026-01">January 2026</option>
+          </select>
+          <button class="btn-add" onclick="navigate('add')">+ Add</button>
+        </div>
+      </div>
 
-      <!-- DASHBOARD -->
-      <div class="view active" id="view-dashboard">
-        <div class="metrics-grid">
-          <div class="metric accent"><div class="ml">Total this month</div><div class="mv" id="m-total">₹0</div><div class="ms" id="m-trend">—</div></div>
-          <div class="metric"><div class="ml">Groceries</div><div class="mv" id="m-groceries">₹0</div><div class="ms">🛒 Food & home</div></div>
-          <div class="metric"><div class="ml">Utilities</div><div class="mv" id="m-utilities">₹0</div><div class="ms">⚡ Bills</div></div>
-          <div class="metric"><div class="ml">Shared</div><div class="mv" id="m-shared">₹0</div><div class="ms" id="m-shared-ct">0 transactions</div></div>
-        </div>
-        <div class="members-strip" id="members-strip"></div>
-        <div class="two-col">
-          <div class="panel"><div class="pt">By category</div><div class="legend" id="pie-legend"></div><div class="chart-wrap"><canvas id="pieChart"></canvas></div></div>
-          <div class="panel"><div class="pt">Weekly trend</div><div class="chart-wrap"><canvas id="barChart"></canvas></div></div>
-        </div>
-        <div class="panel">
-          <div class="panel-hd"><div class="pt">Recent expenses</div>
-            <div class="pills" id="dash-filters">
-              <button class="pill active" onclick="filterExp('all',this)">All</button>
-              <button class="pill" onclick="filterExp('shared',this)">Shared</button>
-              <button class="pill" onclick="filterExp('personal',this)">Personal</button>
+      <div class="views">
+
+        <!-- DASHBOARD -->
+        <div class="view active" id="view-dashboard">
+          <div class="metrics-grid">
+            <div class="metric accent">
+              <div class="ml">Total this month</div>
+              <div class="mv" id="m-total">₹0</div>
+              <div class="ms" id="m-trend">—</div>
+            </div>
+            <div class="metric">
+              <div class="ml">Groceries</div>
+              <div class="mv" id="m-groceries">₹0</div>
+              <div class="ms">🛒 Food & home</div>
+            </div>
+            <div class="metric">
+              <div class="ml">Utilities</div>
+              <div class="mv" id="m-utilities">₹0</div>
+              <div class="ms">⚡ Bills</div>
+            </div>
+            <div class="metric">
+              <div class="ml">Shared</div>
+              <div class="mv" id="m-shared">₹0</div>
+              <div class="ms" id="m-shared-ct">0 transactions</div>
             </div>
           </div>
-          <div class="exp-list" id="dash-list"><div class="empty">Loading...</div></div>
-        </div>
-      </div>
-
-      <!-- ALL EXPENSES -->
-      <div class="view" id="view-expenses">
-        <div class="panel">
-          <div class="panel-hd"><div class="pt">All expenses</div>
-            <div class="pills">
-              <button class="pill active" onclick="filterCat('all',this)">All</button>
-              <button class="pill" onclick="filterCat('Groceries',this)">Groceries</button>
-              <button class="pill" onclick="filterCat('Utilities',this)">Utilities</button>
-              <button class="pill" onclick="filterCat('Transport',this)">Transport</button>
-              <button class="pill" onclick="filterCat('Medical',this)">Medical</button>
-              <button class="pill" onclick="filterCat('Other',this)">Other</button>
+          <div class="members-strip" id="members-strip"></div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="pt">By category</div>
+              <div class="legend" id="pie-legend"></div>
+              <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+            </div>
+            <div class="panel">
+              <div class="pt">Weekly trend</div>
+              <div class="chart-wrap"><canvas id="barChart"></canvas></div>
             </div>
           </div>
-          <div class="exp-list" id="all-list"><div class="empty">Loading...</div></div>
-        </div>
-      </div>
-
-      <!-- ADD EXPENSE -->
-      <div class="view" id="view-add">
-        <div class="form-card">
-          <div class="form-title">New expense</div>
-          <div class="scan-hint" onclick="navigate('scan')">
-            <svg viewBox="0 0 18 18" fill="none" width="16" height="16"><rect x="1.5" y="4.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="10" r="2.8" stroke="currentColor" stroke-width="1.3"/></svg>
-            <span>Scan a receipt — OCR will auto-fill amount & date</span> →
+          <div class="panel">
+            <div class="panel-hd">
+              <div class="pt">Recent expenses</div>
+              <div class="pills" id="dash-filters">
+                <button class="pill active" onclick="filterExp('all',this)">All</button>
+                <button class="pill" onclick="filterExp('shared',this)">Shared</button>
+                <button class="pill" onclick="filterExp('personal',this)">Personal</button>
+              </div>
+            </div>
+            <div class="exp-list" id="dash-list">
+              <div class="empty">Loading...</div>
+            </div>
           </div>
-          <div class="fg"><label class="fl">Description</label><input class="fi" type="text" id="f-desc" placeholder="e.g. Weekly groceries" /></div>
-          <div class="f2"><div class="fg"><label class="fl">Amount (₹)</label><input class="fi" type="number" id="f-amount" placeholder="0" /></div><div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="f-date" /></div></div>
-          <div class="f2">
-            <div class="fg"><label class="fl">Category</label><select class="fi" id="f-cat"><option>Groceries</option><option>Utilities</option><option>Transport</option><option>Entertainment</option><option>Medical</option><option>Other</option></select></div>
-            <div class="fg"><label class="fl">Paid by</label><select class="fi" id="f-paidby" ><option>—</option></select></div>
+        </div>
+
+        <!-- ALL EXPENSES -->
+        <div class="view" id="view-expenses">
+          <div class="panel">
+            <div class="panel-hd">
+              <div class="pt">All expenses</div>
+              <div class="pills">
+                <button class="pill active" onclick="filterCat('all',this)">All</button>
+                <button class="pill" onclick="filterCat('Groceries',this)">Groceries</button>
+                <button class="pill" onclick="filterCat('Utilities',this)">Utilities</button>
+                <button class="pill" onclick="filterCat('Transport',this)">Transport</button>
+                <button class="pill" onclick="filterCat('Medical',this)">Medical</button>
+                <button class="pill" onclick="filterCat('Other',this)">Other</button>
+              </div>
+            </div>
+            <div class="exp-list" id="all-list">
+              <div class="empty">Loading...</div>
+            </div>
           </div>
-          <div class="fg"><label class="fl">Shared with</label><select class="fi" id="f-shared"><option value="none">No one (personal)</option></select></div>
-          <div class="fg"><label class="fl">Notes (optional)</label><input class="fi" type="text" id="f-notes" placeholder="Any extra details..." /></div>
-          <div class="f-actions"><button class="btn-ghost" onclick="resetForm()">Clear</button><button class="btn-save" id="save-btn" onclick="saveExpense()">Save expense</button></div>
-          <div class="save-msg" id="save-status"></div>
         </div>
-      </div>
 
-      <!-- SCAN -->
-      <div class="view" id="view-scan">
-        <div class="form-card">
-          <div class="form-title">Scan receipt</div>
-          <div class="scan-zone" onclick="triggerFileInput()">
-            <input type="file" id="receipt-file" accept="image/*" capture="environment" style="display:none" onchange="handleReceiptFile(this)" />
-            <svg viewBox="0 0 48 48" fill="none" width="44" height="44"><rect x="4" y="10" width="40" height="30" rx="7" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="25" r="8" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="25" r="3" fill="currentColor" opacity=".2"/><path d="M16 4h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-            <div class="scan-zone-label">Tap to open camera or upload photo</div>
-            <div class="scan-zone-sub">OCR will read amount & date automatically</div>
+        <!-- ADD EXPENSE -->
+        <div class="view" id="view-add">
+          <div class="form-card">
+            <div class="form-title">New expense</div>
+            <div class="scan-hint" onclick="navigate('scan')">
+              <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
+                <rect x="1.5" y="4.5" width="15" height="11" rx="2" stroke="currentColor" stroke-width="1.5" />
+                <circle cx="9" cy="10" r="2.8" stroke="currentColor" stroke-width="1.3" />
+              </svg>
+              <span>Scan a receipt — OCR will auto-fill amount & date</span> →
+            </div>
+            <div class="fg"><label class="fl">Description</label><input class="fi" type="text" id="f-desc"
+                placeholder="e.g. Weekly groceries" /></div>
+            <div class="f2">
+              <div class="fg"><label class="fl">Amount (₹)</label><input class="fi" type="number" id="f-amount"
+                  placeholder="0" /></div>
+              <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="f-date" /></div>
+            </div>
+            <div class="f2">
+              <div class="fg"><label class="fl">Category</label><select class="fi" id="f-cat">
+                  <option>Groceries</option>
+                  <option>Utilities</option>
+                  <option>Transport</option>
+                  <option>Entertainment</option>
+                  <option>Medical</option>
+                  <option>Other</option>
+                </select></div>
+              <div class="fg"><label class="fl">Paid by</label><select class="fi" id="f-paidby">
+                  <option>—</option>
+                </select></div>
+            </div>
+            <div class="fg"><label class="fl">Shared with</label><select class="fi" id="f-shared">
+                <option value="none">No one (personal)</option>
+              </select></div>
+            <div class="fg"><label class="fl">Notes (optional)</label><input class="fi" type="text" id="f-notes"
+                placeholder="Any extra details..." /></div>
+            <div class="f-actions"><button class="btn-ghost" onclick="resetForm()">Clear</button><button
+                class="btn-save" id="save-btn" onclick="saveExpense()">Save expense</button></div>
+            <div class="save-msg" id="save-status"></div>
           </div>
-          <div class="ocr-ok hidden" id="ocr-result"><span>✓</span><span id="ocr-text">Scanning...</span></div>
-          <div class="receipt-prev hidden" id="ocr-preview"><img id="receipt-preview" alt="Receipt" /></div>
-          <div class="hidden" id="scan-form-fields"><div class="fg"><label class="fl">Description</label><input class="fi" type="text" id="s-desc" placeholder="e.g. D-Mart groceries" /></div></div>
-          <div class="f2 hidden" id="scan-amount-row"><div class="fg"><label class="fl">Amount (₹)</label><input class="fi" type="number" id="s-amount" /></div><div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="s-date" /></div></div>
-          <div class="hidden" id="scan-cat-row"><div class="fg"><label class="fl">Category</label><select class="fi" id="s-cat"><option>Groceries</option><option>Utilities</option><option>Transport</option><option>Entertainment</option><option>Medical</option><option>Other</option></select></div></div>
-          <div class="f-actions hidden" id="scan-actions"><button class="btn-ghost" onclick="resetScan()">Scan again</button><button class="btn-save" onclick="saveScanExpense()">Save expense</button></div>
         </div>
-      </div>
 
-      <!-- MEMBERS -->
-      <div class="view" id="view-members">
-        <div class="members-grid" id="members-grid"><div class="empty">Loading members...</div></div>
-        <div class="panel" style="margin-top:1rem">
-          <div class="panel-hd"><div class="pt">Invite member</div></div>
-          <div class="invite-row">
-            <input class="fi" type="text" id="inv-name" placeholder="Name" style="width:130px" />
-            <input class="fi" type="email" id="inv-email" placeholder="Gmail address" style="flex:1" />
-            <select class="fi" id="inv-role" style="width:120px"><option value="member">Member</option><option value="admin">Admin</option><option value="view">View only</option></select>
-            <button class="btn-save" onclick="inviteMember()">Add</button>
+        <!-- SCAN -->
+        <div class="view" id="view-scan">
+          <div class="form-card">
+            <div class="form-title">Scan receipt</div>
+            <div class="scan-zone" onclick="triggerFileInput()">
+              <input type="file" id="receipt-file" accept="image/*" capture="environment" style="display:none"
+                onchange="handleReceiptFile(this)" />
+              <svg viewBox="0 0 48 48" fill="none" width="44" height="44">
+                <rect x="4" y="10" width="40" height="30" rx="7" stroke="currentColor" stroke-width="2" />
+                <circle cx="24" cy="25" r="8" stroke="currentColor" stroke-width="2" />
+                <circle cx="24" cy="25" r="3" fill="currentColor" opacity=".2" />
+                <path d="M16 4h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+              </svg>
+              <div class="scan-zone-label">Tap to open camera or upload photo</div>
+              <div class="scan-zone-sub">OCR will read amount & date automatically</div>
+            </div>
+            <div class="ocr-ok hidden" id="ocr-result"><span>✓</span><span id="ocr-text">Scanning...</span></div>
+            <div class="receipt-prev hidden" id="ocr-preview"><img id="receipt-preview" alt="Receipt" /></div>
+            <div class="hidden" id="scan-form-fields">
+              <div class="fg"><label class="fl">Description</label><input class="fi" type="text" id="s-desc"
+                  placeholder="e.g. D-Mart groceries" /></div>
+            </div>
+            <div class="f2 hidden" id="scan-amount-row">
+              <div class="fg"><label class="fl">Amount (₹)</label><input class="fi" type="number" id="s-amount" /></div>
+              <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="s-date" /></div>
+            </div>
+            <div class="hidden" id="scan-cat-row">
+              <div class="fg"><label class="fl">Category</label><select class="fi" id="s-cat">
+                  <option>Groceries</option>
+                  <option>Utilities</option>
+                  <option>Transport</option>
+                  <option>Entertainment</option>
+                  <option>Medical</option>
+                  <option>Other</option>
+                </select></div>
+            </div>
+            <div class="f-actions hidden" id="scan-actions"><button class="btn-ghost" onclick="resetScan()">Scan
+                again</button><button class="btn-save" onclick="saveScanExpense()">Save expense</button></div>
           </div>
-          <div class="invite-msg" id="invite-msg"></div>
         </div>
-      </div>
 
-      <!-- REPORTS -->
-      <div class="view" id="view-reports">
-        <div class="panel" style="margin-bottom:1rem"><div class="pt">Monthly comparison — 2026</div><div class="chart-wrap" style="height:250px"><canvas id="monthlyChart"></canvas></div></div>
-        <div class="two-col">
-          <div class="panel"><div class="pt">Top categories</div><div class="chart-wrap"><canvas id="catChart"></canvas></div></div>
-          <div class="panel"><div class="pt">Per member</div><div class="chart-wrap"><canvas id="memberChart"></canvas></div></div>
+        <!-- MEMBERS -->
+        <div class="view" id="view-members">
+          <div class="members-grid" id="members-grid">
+            <div class="empty">Loading members...</div>
+          </div>
+          <div class="panel" style="margin-top:1rem">
+            <div class="panel-hd">
+              <div class="pt">Invite member</div>
+            </div>
+            <div class="invite-row">
+              <input class="fi" type="text" id="inv-name" placeholder="Name" style="width:130px" />
+              <input class="fi" type="email" id="inv-email" placeholder="Gmail address" style="flex:1" />
+              <select class="fi" id="inv-role" style="width:120px">
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+                <option value="view">View only</option>
+              </select>
+              <button class="btn-save" onclick="inviteMember()">Add</button>
+            </div>
+            <div class="invite-msg" id="invite-msg"></div>
+          </div>
         </div>
+
+        <!-- REPORTS -->
+        <div class="view" id="view-reports">
+          <div class="panel" style="margin-bottom:1rem">
+            <div class="pt">Monthly comparison — 2026</div>
+            <div class="chart-wrap" style="height:250px"><canvas id="monthlyChart"></canvas></div>
+          </div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="pt">Top categories</div>
+              <div class="chart-wrap"><canvas id="catChart"></canvas></div>
+            </div>
+            <div class="panel">
+              <div class="pt">Per member</div>
+              <div class="chart-wrap"><canvas id="memberChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
       </div>
+    </main>
+  </div>
 
-    </div>
-  </main>
-</div>
+  <div class="toast" id="toast"></div>
 
-<div class="toast" id="toast"></div>
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="app.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>

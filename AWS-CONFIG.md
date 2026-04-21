@@ -80,7 +80,7 @@ export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
     const item = {
-      familyId:   body.familyId || "patil-family",
+      familyId:   body.familyId || "family",
       expenseId:  Date.now().toString(),
       desc:       body.desc,
       amount:     body.amount,
@@ -119,7 +119,7 @@ export const handler = async (event) => {
     "Content-Type": "application/json"
   };
   try {
-    const familyId = event.queryStringParameters?.familyId || "patil-family";
+    const familyId = event.queryStringParameters?.familyId || "family";
     const month    = event.queryStringParameters?.month;
     const result = await client.send(new QueryCommand({
       TableName: "GharKharcha-Expenses",
@@ -157,7 +157,7 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body);
     await client.send(new DeleteCommand({
       TableName: "GharKharcha-Expenses",
-      Key: { familyId: body.familyId || "patil-family", expenseId: body.expenseId }
+      Key: { familyId: body.familyId || "family", expenseId: body.expenseId }
     }));
     return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
   } catch (err) {
@@ -187,7 +187,7 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body);
     await client.send(new UpdateCommand({
       TableName: "GharKharcha-Expenses",
-      Key: { familyId: body.familyId || "patil-family", expenseId: body.expenseId },
+      Key: { familyId: body.familyId || "family", expenseId: body.expenseId },
       UpdateExpression: "SET #d=:d, amount=:a, #dt=:dt, category=:c, paidBy=:p, shared=:s, notes=:n",
       ExpressionAttributeNames: { "#d":"desc", "#dt":"date" },
       ExpressionAttributeValues: {
@@ -223,7 +223,7 @@ export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
     const item = {
-      familyId:  body.familyId || "patil-family",
+      familyId:  body.familyId || "family",
       email:     body.email,
       name:      body.name,
       initials:  body.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(),
@@ -258,7 +258,7 @@ export const handler = async (event) => {
     "Content-Type": "application/json"
   };
   try {
-    const familyId = event.queryStringParameters?.familyId || "patil-family";
+    const familyId = event.queryStringParameters?.familyId || "family";
     const result = await client.send(new QueryCommand({
       TableName: "GharKharcha-Members",
       KeyConditionExpression: "familyId = :fid",

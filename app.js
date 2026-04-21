@@ -1,7 +1,7 @@
 /* ── GharKharcha v3 — with Onboarding & Dynamic Members ── */
 
-const API       = 'https://15c3jq5fc2.execute-api.ap-south-1.amazonaws.com';
-const FAMILY_ID = 'patil-family'; // will be dynamic after onboarding
+const API = 'https://15c3jq5fc2.execute-api.ap-south-1.amazonaws.com';
+const FAMILY_ID = 'family'; // will be dynamic after onboarding
 
 const STATE = {
   user: null,
@@ -16,35 +16,35 @@ const STATE = {
 };
 
 const AVATAR_COLORS = [
-  { bg:'#dbeafe', text:'#1d4ed8' }, { bg:'#dcfce7', text:'#166534' },
-  { bg:'#fef9c3', text:'#854d0e' }, { bg:'#fce7f3', text:'#9d174d' },
-  { bg:'#ede9fe', text:'#6d28d9' }, { bg:'#fee2e2', text:'#991b1b' },
+  { bg: '#dbeafe', text: '#1d4ed8' }, { bg: '#dcfce7', text: '#166534' },
+  { bg: '#fef9c3', text: '#854d0e' }, { bg: '#fce7f3', text: '#9d174d' },
+  { bg: '#ede9fe', text: '#6d28d9' }, { bg: '#fee2e2', text: '#991b1b' },
 ];
 
-const CAT_ICONS  = { Groceries:'🛒', Utilities:'⚡', Transport:'🚗', Entertainment:'🎬', Medical:'💊', Other:'📋' };
-const CAT_COLORS = { Groceries:'#3b82f6', Utilities:'#10b981', Transport:'#f59e0b', Entertainment:'#ec4899', Medical:'#8b5cf6', Other:'#6b7280' };
+const CAT_ICONS = { Groceries: '🛒', Utilities: '⚡', Transport: '🚗', Entertainment: '🎬', Medical: '💊', Other: '📋' };
+const CAT_COLORS = { Groceries: '#3b82f6', Utilities: '#10b981', Transport: '#f59e0b', Entertainment: '#ec4899', Medical: '#8b5cf6', Other: '#6b7280' };
 
 /* ─────────────── API ─────────────── */
-async function apiCall(path, method='GET', body=null) {
-  const opts = { method, headers:{ 'Content-Type':'application/json' } };
+async function apiCall(path, method = 'GET', body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(`${API}${path}`, opts);
   if (!res.ok) throw new Error(`API ${method} ${path} failed: ${res.status}`);
   return res.json();
 }
 
-const apiSaveExpense   = (e) => apiCall('/expense',  'POST', { ...e, familyId: STATE.family?.familyId || FAMILY_ID });
-const apiGetExpenses   = (m) => apiCall(`/expenses?familyId=${STATE.family?.familyId || FAMILY_ID}${m?'&month='+m:''}`).then(d => d.expenses||[]);
-const apiDeleteExpense = (id) => apiCall('/expense',  'DELETE', { familyId: STATE.family?.familyId || FAMILY_ID, expenseId: id });
-const apiSaveMember    = (m) => apiCall('/member',   'POST',   { ...m, familyId: STATE.family?.familyId || FAMILY_ID });
-const apiGetMembers    = () => apiCall(`/members?familyId=${STATE.family?.familyId || FAMILY_ID}`).then(d => d.members||[]);
+const apiSaveExpense = (e) => apiCall('/expense', 'POST', JSONSON.stringify({ ...e, familyId: STATE.family?.familyId || FAMILY_ID }));
+const apiGetExpenses = (m) => apiCall(`/expenses?familyId=${STATE.family?.familyId || FAMILY_ID}${m ? '&month=' + m : ''}`).then(d => d.expenses || []);
+const apiDeleteExpense = (id) => apiCall('/expense', 'DELETE', JSONSON.stringify({ familyId: STATE.family?.familyId || FAMILY_ID, expenseId: id }));
+const apiSaveMember = (m) => apiCall('/member', 'POST', JSONSON.stringify({ ...m, familyId: STATE.family?.familyId || FAMILY_ID }));
+const apiGetMembers = () => apiCall(`/members?familyId=${STATE.family?.familyId || FAMILY_ID}`).then(d => d.members || []);
 
 /* ─────────────── AUTH ─────────────── */
 function handleLogin(response) {
   const p = parseJwt(response.credential);
   STATE.user = {
     name: p.name, email: p.email, picture: p.picture,
-    initials: p.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(),
+    initials: p.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
   };
   localStorage.setItem('gk_user', JSON.stringify(STATE.user));
 
@@ -59,7 +59,7 @@ function handleLogin(response) {
 }
 
 function parseJwt(token) {
-  return JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+  return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
 }
 
 function logout() {
@@ -88,7 +88,7 @@ function setProgress(step) {
   document.getElementById('ob-step-label').textContent = `Step ${step} of 3`;
 }
 
-function obNext(step, skip=false) {
+function obNext(step, skip = false) {
   if (step === 1) {
     const name = document.getElementById('ob-yourname').value.trim();
     const family = document.getElementById('ob-familyname').value.trim();
@@ -97,13 +97,13 @@ function obNext(step, skip=false) {
     if (!family) { toast('Please enter your family name'); return; }
 
     // Build family ID from family name
-    const fid = family.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') + '-' + Date.now().toString().slice(-4);
+    const fid = family.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-' + Date.now().toString().slice(-4);
     STATE.family = {
       familyId: fid,
       familyName: family,
       members: [{
         name, email: STATE.user.email,
-        role, initials: name.slice(0,2).toUpperCase(),
+        role, initials: name.slice(0, 2).toUpperCase(),
         color: AVATAR_COLORS[0].bg, textColor: AVATAR_COLORS[0].text,
         isYou: true,
       }]
@@ -124,7 +124,7 @@ function obNext(step, skip=false) {
         const r = document.getElementById(`mr-${i}`)?.value;
         if (n && e) {
           const colorIdx = (STATE.family.members.length + extra.length) % AVATAR_COLORS.length;
-          extra.push({ name:n, email:e, role:r, initials:n.slice(0,2).toUpperCase(), color:AVATAR_COLORS[colorIdx].bg, textColor:AVATAR_COLORS[colorIdx].text });
+          extra.push({ name: n, email: e, role: r, initials: n.slice(0, 2).toUpperCase(), color: AVATAR_COLORS[colorIdx].bg, textColor: AVATAR_COLORS[colorIdx].text });
         }
       }
       STATE.family.members.push(...extra);
@@ -240,7 +240,7 @@ function showApp() {
   document.getElementById('sb-family-name').textContent = STATE.family?.familyName || 'My Family';
 
   // Set topbar date
-  document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   // Populate paid-by and shared-with dropdowns from family members
   populateMemberDropdowns();
@@ -250,14 +250,14 @@ function showApp() {
 
 function populateMemberDropdowns() {
   const members = STATE.family?.members || [];
-  const paidby  = document.getElementById('f-paidby');
-  const shared  = document.getElementById('f-shared');
+  const paidby = document.getElementById('f-paidby');
+  const shared = document.getElementById('f-shared');
 
   // Find current user's name
   const me = members.find(m => m.email === STATE.user?.email);
 
   paidby.innerHTML = members.map(m =>
-    `<option value="${m.name}" ${m.email === STATE.user?.email ? 'selected' : ''}>${m.name}${m.email===STATE.user?.email?' (you)':''}</option>`
+    `<option value="${m.name}" ${m.email === STATE.user?.email ? 'selected' : ''}>${m.name}${m.email === STATE.user?.email ? ' (you)' : ''}</option>`
   ).join('');
 
   shared.innerHTML = `<option value="none">No one (personal)</option>` +
@@ -276,7 +276,7 @@ function navigate(view) {
   document.getElementById(`view-${view}`)?.classList.add('active');
   document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
 
-  const titles = { dashboard:'Dashboard', expenses:'All Expenses', add:'Add Expense', scan:'Scan Receipt', members:'Members', reports:'Reports' };
+  const titles = { dashboard: 'Dashboard', expenses: 'All Expenses', add: 'Add Expense', scan: 'Scan Receipt', members: 'Members', reports: 'Reports' };
   document.getElementById('topbar-title').textContent = titles[view] || view;
 
   document.getElementById('sidebar').classList.remove('open');
@@ -284,9 +284,9 @@ function navigate(view) {
 
   if (view === 'add') { document.getElementById('f-date').value = todayStr(); }
   if (view === 'dashboard') loadDashboard();
-  if (view === 'expenses')  loadAllExpenses();
-  if (view === 'members')   loadMembers();
-  if (view === 'reports')   loadReports();
+  if (view === 'expenses') loadAllExpenses();
+  if (view === 'members') loadMembers();
+  if (view === 'reports') loadReports();
   window.scrollTo(0, 0);
 }
 
@@ -309,17 +309,17 @@ async function loadDashboard() {
 }
 
 function renderDashboard(expenses) {
-  const total     = expenses.reduce((s,e) => s+Number(e.amount), 0);
-  const groceries = expenses.filter(e=>e.category==='Groceries').reduce((s,e)=>s+Number(e.amount),0);
-  const utilities = expenses.filter(e=>e.category==='Utilities').reduce((s,e)=>s+Number(e.amount),0);
-  const shared    = expenses.filter(e=>e.shared);
+  const total = expenses.reduce((s, e) => s + Number(e.amount), 0);
+  const groceries = expenses.filter(e => e.category === 'Groceries').reduce((s, e) => s + Number(e.amount), 0);
+  const utilities = expenses.filter(e => e.category === 'Utilities').reduce((s, e) => s + Number(e.amount), 0);
+  const shared = expenses.filter(e => e.shared);
 
-  document.getElementById('m-total').textContent     = fmt(total);
+  document.getElementById('m-total').textContent = fmt(total);
   document.getElementById('m-groceries').textContent = fmt(groceries);
   document.getElementById('m-utilities').textContent = fmt(utilities);
-  document.getElementById('m-shared').textContent    = fmt(shared.reduce((s,e)=>s+Number(e.amount),0));
+  document.getElementById('m-shared').textContent = fmt(shared.reduce((s, e) => s + Number(e.amount), 0));
   document.getElementById('m-shared-ct').textContent = `${shared.length} transactions`;
-  document.getElementById('m-trend').textContent     = `${expenses.length} transactions`;
+  document.getElementById('m-trend').textContent = `${expenses.length} transactions`;
 
   renderMembersStrip(expenses);
   renderPieChart(expenses);
@@ -327,12 +327,12 @@ function renderDashboard(expenses) {
   renderExpList(expenses, 'dash-list', STATE.currentFilter);
 }
 
-function monthChanged() { if (STATE.currentView==='dashboard') loadDashboard(); }
+function monthChanged() { if (STATE.currentView === 'dashboard') loadDashboard(); }
 
 function renderMembersStrip(expenses) {
   const members = STATE.family?.members || [];
   document.getElementById('members-strip').innerHTML = members.map(m => {
-    const spent = expenses.filter(e=>e.paidBy===m.name).reduce((s,e)=>s+Number(e.amount),0);
+    const spent = expenses.filter(e => e.paidBy === m.name).reduce((s, e) => s + Number(e.amount), 0);
     return `<div class="m-chip">
       <div class="ch-av" style="background:${m.color};color:${m.textColor}">${m.initials}</div>
       <div><div class="ch-name">${m.name}</div><div class="ch-amt">${fmt(spent)}</div></div>
@@ -343,14 +343,14 @@ function renderMembersStrip(expenses) {
 function renderExpList(expenses, id, filter) {
   const el = document.getElementById(id);
   let list = [...expenses];
-  if (filter==='shared')   list = list.filter(e=>e.shared);
-  if (filter==='personal') list = list.filter(e=>!e.shared);
-  if (!list.length) { el.innerHTML='<div class="empty">No expenses found. Add your first one!</div>'; return; }
-  el.innerHTML = list.slice(0,20).map(e=>`
+  if (filter === 'shared') list = list.filter(e => e.shared);
+  if (filter === 'personal') list = list.filter(e => !e.shared);
+  if (!list.length) { el.innerHTML = '<div class="empty">No expenses found. Add your first one!</div>'; return; }
+  el.innerHTML = list.slice(0, 20).map(e => `
     <div class="exp-row">
-      <div class="exp-ic">${CAT_ICONS[e.category]||'📋'}</div>
+      <div class="exp-ic">${CAT_ICONS[e.category] || '📋'}</div>
       <div><div class="exp-name">${e.desc}</div><div class="exp-meta">${e.paidBy} · ${e.category}</div></div>
-      <span class="exp-badge ${e.shared?'b-sh':'b-pe'}">${e.shared?'Shared':'Personal'}</span>
+      <span class="exp-badge ${e.shared ? 'b-sh' : 'b-pe'}">${e.shared ? 'Shared' : 'Personal'}</span>
       <div class="exp-date">${fmtDate(e.date)}</div>
       <div class="exp-amt">${fmt(e.amount)}</div>
     </div>`).join('');
@@ -358,78 +358,78 @@ function renderExpList(expenses, id, filter) {
 
 function filterExp(f, btn) {
   STATE.currentFilter = f;
-  document.getElementById('dash-filters').querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  document.getElementById('dash-filters').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   renderExpList(STATE.expenses, 'dash-list', f);
 }
 
 /* ─────────────── ALL EXPENSES ─────────────── */
 async function loadAllExpenses() {
-  document.getElementById('all-list').innerHTML='<div class="empty">Loading...</div>';
-  try { STATE.expenses = await apiGetExpenses(); } catch(e){}
+  document.getElementById('all-list').innerHTML = '<div class="empty">Loading...</div>';
+  try { STATE.expenses = await apiGetExpenses(); } catch (e) { }
   renderAllExpenses();
 }
 
 function renderAllExpenses() {
   let list = [...STATE.expenses];
-  if (STATE.currentCatFilter!=='all') list = list.filter(e=>e.category===STATE.currentCatFilter);
+  if (STATE.currentCatFilter !== 'all') list = list.filter(e => e.category === STATE.currentCatFilter);
   renderExpList(list, 'all-list', 'all');
 }
 
 function filterCat(cat, btn) {
   STATE.currentCatFilter = cat;
-  document.querySelectorAll('#view-expenses .pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#view-expenses .pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   renderAllExpenses();
 }
 
 /* ─────────────── SAVE EXPENSE ─────────────── */
 async function saveExpense() {
-  const desc   = document.getElementById('f-desc').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
   const amount = parseFloat(document.getElementById('f-amount').value);
-  const date   = document.getElementById('f-date').value;
-  const cat    = document.getElementById('f-cat').value;
+  const date = document.getElementById('f-date').value;
+  const cat = document.getElementById('f-cat').value;
   const paidBy = document.getElementById('f-paidby').value;
   const shared = document.getElementById('f-shared').value;
-  const notes  = document.getElementById('f-notes').value.trim();
+  const notes = document.getElementById('f-notes').value.trim();
 
-  if (!desc)          { toast('Please enter a description'); return; }
-  if (!amount||amount<=0) { toast('Please enter a valid amount'); return; }
-  if (!date)          { toast('Please pick a date'); return; }
+  if (!desc) { toast('Please enter a description'); return; }
+  if (!amount || amount <= 0) { toast('Please enter a valid amount'); return; }
+  if (!date) { toast('Please pick a date'); return; }
 
   const btn = document.getElementById('save-btn');
-  btn.textContent='Saving...'; btn.disabled=true;
+  btn.textContent = 'Saving...'; btn.disabled = true;
   try {
-    await apiSaveExpense({ desc, amount, date, category:cat, paidBy, shared:shared!=='none'?shared:null, notes, receiptUrl:null, createdBy:STATE.user?.email });
+    await apiSaveExpense({ desc, amount, date, category: cat, paidBy, shared: shared !== 'none' ? shared : null, notes, receiptUrl: null, createdBy: STATE.user?.email });
     resetForm();
-    document.getElementById('save-status').textContent='✓ Saved to cloud!';
-    setTimeout(()=>document.getElementById('save-status').textContent='',3000);
+    document.getElementById('save-status').textContent = '✓ Saved to cloud!';
+    setTimeout(() => document.getElementById('save-status').textContent = '', 3000);
     toast(`${fmt(amount)} saved ☁️`);
-    setTimeout(()=>navigate('dashboard'),700);
-  } catch(e) { toast('Error saving — check connection'); }
-  finally { btn.textContent='Save expense'; btn.disabled=false; }
+    setTimeout(() => navigate('dashboard'), 700);
+  } catch (e) { toast('Error saving — check connection'); }
+  finally { btn.textContent = 'Save expense'; btn.disabled = false; }
 }
 
 async function saveScanExpense() {
-  const desc   = document.getElementById('s-desc').value.trim()||'Scanned receipt';
+  const desc = document.getElementById('s-desc').value.trim() || 'Scanned receipt';
   const amount = parseFloat(document.getElementById('s-amount').value);
-  const date   = document.getElementById('s-date').value||todayStr();
-  const cat    = document.getElementById('s-cat').value;
-  if (!amount||amount<=0) { toast('Please verify the amount'); return; }
-  const me = STATE.family?.members?.find(m=>m.email===STATE.user?.email);
+  const date = document.getElementById('s-date').value || todayStr();
+  const cat = document.getElementById('s-cat').value;
+  if (!amount || amount <= 0) { toast('Please verify the amount'); return; }
+  const me = STATE.family?.members?.find(m => m.email === STATE.user?.email);
   try {
-    await apiSaveExpense({ desc, amount, date, category:cat, paidBy:me?.name||'Me', shared:null, notes:'Scanned receipt', receiptUrl:null, createdBy:STATE.user?.email });
+    await apiSaveExpense({ desc, amount, date, category: cat, paidBy: me?.name || 'Me', shared: null, notes: 'Scanned receipt', receiptUrl: null, createdBy: STATE.user?.email });
     toast(`${fmt(amount)} saved ☁️`);
     resetScan();
-    setTimeout(()=>navigate('dashboard'),700);
-  } catch(e) { toast('Error saving'); }
+    setTimeout(() => navigate('dashboard'), 700);
+  } catch (e) { toast('Error saving'); }
 }
 
 function resetForm() {
-  ['f-desc','f-amount','f-notes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-date').value=todayStr();
-  document.getElementById('f-cat').value='Groceries';
-  document.getElementById('f-shared').value='none';
+  ['f-desc', 'f-amount', 'f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-date').value = todayStr();
+  document.getElementById('f-cat').value = 'Groceries';
+  document.getElementById('f-shared').value = 'none';
 }
 
 /* ─────────────── SCAN ─────────────── */
@@ -450,48 +450,48 @@ function handleReceiptFile(input) {
 
   // Simulated OCR — Phase 2: replace with real Google Vision API
   setTimeout(() => {
-    const mockAmt = Math.floor(Math.random()*3000)+200;
+    const mockAmt = Math.floor(Math.random() * 3000) + 200;
     textEl.textContent = `Detected: ₹${mockAmt.toLocaleString('en-IN')} · ${fmtDate(todayStr())}`;
     document.getElementById('s-amount').value = mockAmt;
     document.getElementById('s-date').value = todayStr();
-    ['scan-form-fields','scan-amount-row','scan-cat-row','scan-actions'].forEach(id=>document.getElementById(id).classList.remove('hidden'));
+    ['scan-form-fields', 'scan-amount-row', 'scan-cat-row', 'scan-actions'].forEach(id => document.getElementById(id).classList.remove('hidden'));
   }, 1800);
 }
 
 function resetScan() {
-  document.getElementById('receipt-file').value='';
+  document.getElementById('receipt-file').value = '';
   document.getElementById('ocr-result').classList.add('hidden');
   document.getElementById('ocr-preview').classList.add('hidden');
-  ['scan-form-fields','scan-amount-row','scan-cat-row','scan-actions'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-  ['s-desc','s-amount'].forEach(id=>document.getElementById(id).value='');
+  ['scan-form-fields', 'scan-amount-row', 'scan-cat-row', 'scan-actions'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  ['s-desc', 's-amount'].forEach(id => document.getElementById(id).value = '');
 }
 
 /* ─────────────── MEMBERS ─────────────── */
 async function loadMembers() {
   try {
     const members = await apiGetMembers();
-    if (members.length>0) {
+    if (members.length > 0) {
       STATE.family.members = members;
       localStorage.setItem('gk_family', JSON.stringify(STATE.family));
     }
-  } catch(e) {}
+  } catch (e) { }
   renderMembers();
 }
 
 function renderMembers() {
-  const members = STATE.family?.members||[];
+  const members = STATE.family?.members || [];
   const expenses = STATE.expenses;
-  document.getElementById('members-grid').innerHTML = members.length ? members.map(m=>{
-    const spent = expenses.filter(e=>e.paidBy===m.name).reduce((s,e)=>s+Number(e.amount),0);
-    const count = expenses.filter(e=>e.paidBy===m.name).length;
-    const isYou = m.email===STATE.user?.email;
+  document.getElementById('members-grid').innerHTML = members.length ? members.map(m => {
+    const spent = expenses.filter(e => e.paidBy === m.name).reduce((s, e) => s + Number(e.amount), 0);
+    const count = expenses.filter(e => e.paidBy === m.name).length;
+    const isYou = m.email === STATE.user?.email;
     return `<div class="mem-card">
       <div class="mem-head">
         <div class="mem-av" style="background:${m.color};color:${m.textColor}">${m.initials}</div>
         <div>
-          <div class="mem-name">${m.name}${isYou?' 👋':''}</div>
+          <div class="mem-name">${m.name}${isYou ? ' 👋' : ''}</div>
           <div class="mem-email">${m.email}</div>
-          <span class="mem-role-badge">${m.role}${isYou?' · you':''}</span>
+          <span class="mem-role-badge">${m.role}${isYou ? ' · you' : ''}</span>
         </div>
       </div>
       <div class="mem-stats">Spent: <strong>${fmt(spent)}</strong> · ${count} expenses</div>
@@ -500,16 +500,16 @@ function renderMembers() {
 }
 
 async function inviteMember() {
-  const name  = document.getElementById('inv-name').value.trim();
+  const name = document.getElementById('inv-name').value.trim();
   const email = document.getElementById('inv-email').value.trim();
-  const role  = document.getElementById('inv-role').value;
-  if (!name)  { toast('Please enter a name'); return; }
-  if (!email||!email.includes('@')) { toast('Please enter a valid Gmail'); return; }
+  const role = document.getElementById('inv-role').value;
+  if (!name) { toast('Please enter a name'); return; }
+  if (!email || !email.includes('@')) { toast('Please enter a valid Gmail'); return; }
 
   const colorIdx = STATE.family.members.length % AVATAR_COLORS.length;
   const member = {
     name, email, role,
-    initials: name.slice(0,2).toUpperCase(),
+    initials: name.slice(0, 2).toUpperCase(),
     color: AVATAR_COLORS[colorIdx].bg,
     textColor: AVATAR_COLORS[colorIdx].text,
   };
@@ -520,86 +520,86 @@ async function inviteMember() {
     localStorage.setItem('gk_family', JSON.stringify(STATE.family));
     populateMemberDropdowns();
     renderMembers();
-    document.getElementById('inv-name').value='';
-    document.getElementById('inv-email').value='';
-    document.getElementById('invite-msg').textContent=`✓ ${name} added!`;
-    setTimeout(()=>document.getElementById('invite-msg').textContent='',3000);
+    document.getElementById('inv-name').value = '';
+    document.getElementById('inv-email').value = '';
+    document.getElementById('invite-msg').textContent = `✓ ${name} added!`;
+    setTimeout(() => document.getElementById('invite-msg').textContent = '', 3000);
     toast(`${name} added to family`);
-  } catch(e) { toast('Error adding member'); }
+  } catch (e) { toast('Error adding member'); }
 }
 
 /* ─────────────── CHARTS ─────────────── */
 function renderPieChart(expenses) {
   const cats = Object.keys(CAT_COLORS);
-  const data = cats.map(c=>expenses.filter(e=>e.category===c).reduce((s,e)=>s+Number(e.amount),0));
-  const hasData = data.some(d=>d>0);
-  const total = data.reduce((s,v)=>s+v,0);
+  const data = cats.map(c => expenses.filter(e => e.category === c).reduce((s, e) => s + Number(e.amount), 0));
+  const hasData = data.some(d => d > 0);
+  const total = data.reduce((s, v) => s + v, 0);
 
-  document.getElementById('pie-legend').innerHTML = cats.filter((_,i)=>data[i]>0).map(c=>{
-    const pct = total>0?Math.round(data[cats.indexOf(c)]/total*100):0;
+  document.getElementById('pie-legend').innerHTML = cats.filter((_, i) => data[i] > 0).map(c => {
+    const pct = total > 0 ? Math.round(data[cats.indexOf(c)] / total * 100) : 0;
     return `<span class="li"><span class="ldot" style="background:${CAT_COLORS[c]}"></span>${c} ${pct}%</span>`;
   }).join('');
 
   destroyChart('pieChart');
-  STATE.charts.pie = new Chart(document.getElementById('pieChart'),{
-    type:'doughnut',
-    data:{labels:cats,datasets:[{data:hasData?data:[1],backgroundColor:hasData?cats.map(c=>CAT_COLORS[c]):['#e5e7eb'],borderWidth:3,borderColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ₹${Number(ctx.raw).toLocaleString('en-IN')}`}}}},
+  STATE.charts.pie = new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: { labels: cats, datasets: [{ data: hasData ? data : [1], backgroundColor: hasData ? cats.map(c => CAT_COLORS[c]) : ['#e5e7eb'], borderWidth: 3, borderColor: '#fff' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ₹${Number(ctx.raw).toLocaleString('en-IN')}` } } } },
   });
 }
 
 function renderBarChart(expenses) {
-  const weeks=[0,0,0,0,0];
-  expenses.forEach(e=>{const w=Math.min(Math.floor((new Date(e.date).getDate()-1)/7),4);weeks[w]+=Number(e.amount);});
+  const weeks = [0, 0, 0, 0, 0];
+  expenses.forEach(e => { const w = Math.min(Math.floor((new Date(e.date).getDate() - 1) / 7), 4); weeks[w] += Number(e.amount); });
   destroyChart('barChart');
-  STATE.charts.bar = new Chart(document.getElementById('barChart'),{
-    type:'bar',
-    data:{labels:['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5'],datasets:[{data:weeks,backgroundColor:'#2563eb',borderRadius:5,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ₹${Number(ctx.raw).toLocaleString('en-IN')}`}}},scales:{y:{ticks:{callback:v=>'₹'+(v/1000).toFixed(0)+'k',font:{size:11}},grid:{color:'rgba(0,0,0,.04)'}},x:{ticks:{font:{size:11}},grid:{display:false}}}},
+  STATE.charts.bar = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: { labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5'], datasets: [{ data: weeks, backgroundColor: '#2563eb', borderRadius: 5, borderSkipped: false }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ₹${Number(ctx.raw).toLocaleString('en-IN')}` } } }, scales: { y: { ticks: { callback: v => '₹' + (v / 1000).toFixed(0) + 'k', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.04)' } }, x: { ticks: { font: { size: 11 } }, grid: { display: false } } } },
   });
 }
 
 async function loadReports() {
-  try { STATE.expenses = await apiGetExpenses(); } catch(e){}
+  try { STATE.expenses = await apiGetExpenses(); } catch (e) { }
   const all = STATE.expenses;
-  const months=['Jan','Feb','Mar','Apr'];
-  const mData = months.map((_,i)=>(all).filter(e=>e.date?.startsWith(`2026-0${i+1}`)).reduce((s,e)=>s+Number(e.amount),0));
+  const months = ['Jan', 'Feb', 'Mar', 'Apr'];
+  const mData = months.map((_, i) => (all).filter(e => e.date?.startsWith(`2026-0${i + 1}`)).reduce((s, e) => s + Number(e.amount), 0));
   const cats = Object.keys(CAT_COLORS);
-  const cData = cats.map(c=>all.filter(e=>e.category===c).reduce((s,e)=>s+Number(e.amount),0));
-  const members = STATE.family?.members||[];
-  const mNames = members.map(m=>m.name);
-  const meData = mNames.map(n=>all.filter(e=>e.paidBy===n).reduce((s,e)=>s+Number(e.amount),0));
+  const cData = cats.map(c => all.filter(e => e.category === c).reduce((s, e) => s + Number(e.amount), 0));
+  const members = STATE.family?.members || [];
+  const mNames = members.map(m => m.name);
+  const meData = mNames.map(n => all.filter(e => e.paidBy === n).reduce((s, e) => s + Number(e.amount), 0));
 
   destroyChart('monthlyChart');
-  STATE.charts.monthly = new Chart(document.getElementById('monthlyChart'),{type:'bar',data:{labels:months,datasets:[{data:mData,backgroundColor:'#1d4ed8',borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ₹${Number(ctx.raw).toLocaleString('en-IN')}`}}},scales:{y:{ticks:{callback:v=>'₹'+(v/1000).toFixed(0)+'k',font:{size:11}},grid:{color:'rgba(0,0,0,.04)'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}});
+  STATE.charts.monthly = new Chart(document.getElementById('monthlyChart'), { type: 'bar', data: { labels: months, datasets: [{ data: mData, backgroundColor: '#1d4ed8', borderRadius: 5, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ₹${Number(ctx.raw).toLocaleString('en-IN')}` } } }, scales: { y: { ticks: { callback: v => '₹' + (v / 1000).toFixed(0) + 'k', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.04)' } }, x: { ticks: { font: { size: 11 } }, grid: { display: false } } } } });
   destroyChart('catChart');
-  STATE.charts.cat = new Chart(document.getElementById('catChart'),{type:'bar',data:{labels:cats,datasets:[{data:cData,backgroundColor:cats.map(c=>CAT_COLORS[c]),borderRadius:5,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ₹${Number(ctx.raw).toLocaleString('en-IN')}`}}},scales:{x:{ticks:{callback:v=>'₹'+(v/1000).toFixed(0)+'k',font:{size:11}},grid:{color:'rgba(0,0,0,.04)'}},y:{ticks:{font:{size:11}},grid:{display:false}}}}});
+  STATE.charts.cat = new Chart(document.getElementById('catChart'), { type: 'bar', data: { labels: cats, datasets: [{ data: cData, backgroundColor: cats.map(c => CAT_COLORS[c]), borderRadius: 5, borderSkipped: false }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ₹${Number(ctx.raw).toLocaleString('en-IN')}` } } }, scales: { x: { ticks: { callback: v => '₹' + (v / 1000).toFixed(0) + 'k', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.04)' } }, y: { ticks: { font: { size: 11 } }, grid: { display: false } } } } });
   destroyChart('memberChart');
-  STATE.charts.member = new Chart(document.getElementById('memberChart'),{type:'doughnut',data:{labels:mNames,datasets:[{data:meData,backgroundColor:members.map(m=>m.textColor),borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}},tooltip:{callbacks:{label:ctx=>` ₹${Number(ctx.raw).toLocaleString('en-IN')}`}}}}});
+  STATE.charts.member = new Chart(document.getElementById('memberChart'), { type: 'doughnut', data: { labels: mNames, datasets: [{ data: meData, backgroundColor: members.map(m => m.textColor), borderWidth: 3, borderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } }, tooltip: { callbacks: { label: ctx => ` ₹${Number(ctx.raw).toLocaleString('en-IN')}` } } } } });
 }
 
 function destroyChart(id) {
-  const key=id.replace('Chart','');
-  if(STATE.charts[key]){STATE.charts[key].destroy();delete STATE.charts[key];}
+  const key = id.replace('Chart', '');
+  if (STATE.charts[key]) { STATE.charts[key].destroy(); delete STATE.charts[key]; }
 }
 
 /* ─────────────── HELPERS ─────────────── */
-function fmt(n)    { return '₹'+Number(n).toLocaleString('en-IN'); }
-function todayStr(){ return new Date().toISOString().split('T')[0]; }
-function fmtDate(s){ if(!s)return''; return new Date(s+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
-function toast(msg){ const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800); }
+function fmt(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function fmtDate(s) { if (!s) return ''; return new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
+function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2800); }
 
 /* ─────────────── INIT ─────────────── */
 function initSidebarOverlay() {
-  const o=document.createElement('div');
-  o.className='sidebar-overlay';
-  o.onclick=()=>{document.getElementById('sidebar').classList.remove('open');o.classList.remove('show');};
+  const o = document.createElement('div');
+  o.className = 'sidebar-overlay';
+  o.onclick = () => { document.getElementById('sidebar').classList.remove('open'); o.classList.remove('show'); };
   document.body.appendChild(o);
 }
 
-window.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('DOMContentLoaded', () => {
   initSidebarOverlay();
-  const savedUser   = localStorage.getItem('gk_user');
+  const savedUser = localStorage.getItem('gk_user');
   const savedFamily = localStorage.getItem('gk_family');
   if (savedUser) {
     STATE.user = JSON.parse(savedUser);
