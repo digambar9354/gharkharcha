@@ -303,6 +303,7 @@ async function loadDashboard() {
     STATE.expenses = await apiGetExpenses(month);
     renderDashboard(STATE.expenses);
   } catch (e) {
+    console.log(e);
     toast('Could not load — check connection');
     renderDashboard([]);
   }
@@ -366,7 +367,7 @@ function filterExp(f, btn) {
 /* ─────────────── ALL EXPENSES ─────────────── */
 async function loadAllExpenses() {
   document.getElementById('all-list').innerHTML = '<div class="empty">Loading...</div>';
-  try { STATE.expenses = await apiGetExpenses(); } catch (e) { }
+  try { STATE.expenses = await apiGetExpenses(); } catch (e) { console.log(e); }
   renderAllExpenses();
 }
 
@@ -406,7 +407,10 @@ async function saveExpense() {
     setTimeout(() => document.getElementById('save-status').textContent = '', 3000);
     toast(`${fmt(amount)} saved ☁️`);
     setTimeout(() => navigate('dashboard'), 700);
-  } catch (e) { toast('Error saving — check connection' + e); }
+  } catch (e) {
+    console.log(e);
+    toast('Error saving — check connection' + e);
+  }
   finally { btn.textContent = 'Save expense'; btn.disabled = false; }
 }
 
@@ -422,7 +426,10 @@ async function saveScanExpense() {
     toast(`${fmt(amount)} saved ☁️`);
     resetScan();
     setTimeout(() => navigate('dashboard'), 700);
-  } catch (e) { toast('Error saving' + e); }
+  } catch (e) {
+    console.log(e);
+    toast('Error saving' + e);
+  }
 }
 
 function resetForm() {
@@ -474,7 +481,10 @@ async function loadMembers() {
       STATE.family.members = members;
       localStorage.setItem('gk_family', JSON.stringify(STATE.family));
     }
-  } catch (e) { }
+  } catch (e) {
+    console.log(e);
+    toast('Could not load family members');
+  }
   renderMembers();
 }
 
@@ -525,7 +535,10 @@ async function inviteMember() {
     document.getElementById('invite-msg').textContent = `✓ ${name} added!`;
     setTimeout(() => document.getElementById('invite-msg').textContent = '', 3000);
     toast(`${name} added to family`);
-  } catch (e) { toast('Error adding member' + e); }
+  } catch (e) {
+    console.log(e);
+    toast('Error adding member' + e);
+  }
 }
 
 /* ─────────────── CHARTS ─────────────── */
@@ -560,7 +573,9 @@ function renderBarChart(expenses) {
 }
 
 async function loadReports() {
-  try { STATE.expenses = await apiGetExpenses(); } catch (e) { }
+  try { STATE.expenses = await apiGetExpenses(); } catch (e) {
+    console.log(e);
+  }
   const all = STATE.expenses;
   const months = ['Jan', 'Feb', 'Mar', 'Apr'];
   const mData = months.map((_, i) => (all).filter(e => e.date?.startsWith(`2026-0${i + 1}`)).reduce((s, e) => s + Number(e.amount), 0));
