@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useApp } from '../context/AppContext'
+import config from '../config.js'
 
 export default function Login() {
   const { login } = useApp()
@@ -7,13 +8,13 @@ export default function Login() {
   useEffect(() => {
     window.handleGoogleLogin = login
     if (window.google) initGoogle()
-    window.addEventListener('load', initGoogle)
+    else window.addEventListener('load', initGoogle)
     return () => window.removeEventListener('load', initGoogle)
   }, [login])
 
   function initGoogle() {
     window.google?.accounts.id.initialize({
-      client_id: '56285835763-s5mk752qj0smuc01hr10k5nu7ii46n1c.apps.googleusercontent.com',
+      client_id: config.google.clientId,
       callback: login,
     })
     window.google?.accounts.id.renderButton(
@@ -25,13 +26,15 @@ export default function Login() {
   return (
     <div className="login-screen">
       <div className="login-bg">
-        <div className="orb o1" /><div className="orb o2" /><div className="orb o3" />
+        <div className="orb o1" />
+        <div className="orb o2" />
+        <div className="orb o3" />
         <div className="grid-bg" />
       </div>
       <div className="login-card">
         <div className="login-brand">
           <svg viewBox="0 0 40 40" width="42" height="42">
-            <rect width="40" height="40" rx="10" fill="#0f2744"/>
+            <rect width="40" height="40" rx="10" fill="#0f2744" />
             <text x="20" y="30" fontFamily="serif" fontSize="24" fontWeight="bold" fill="#60a5fa" textAnchor="middle">घ</text>
           </svg>
           <div>
@@ -47,7 +50,7 @@ export default function Login() {
           <div className="lf-row"><span className="lf-ic">📊</span><span>CSV import, reports, split & settle</span></div>
         </div>
         <div id="google-btn" style={{ marginBottom: '1rem' }} />
-        <div className="login-note">Your data is encrypted and stored securely in AWS Mumbai region</div>
+        <div className="login-note">Your data is stored securely in AWS · No password required</div>
       </div>
     </div>
   )

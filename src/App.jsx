@@ -4,12 +4,21 @@ import Login from './pages/Login'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import AddExpense from './pages/AddExpense'
-import { Expenses, CashFlow, Members, Settle, Reports, Settings, Scan, ImportCSV } from './pages/pages.jsx'
+import Expenses from './pages/Expenses'
+import CashFlow from './pages/CashFlow'
+import Members from './pages/Members'
+import Settle from './pages/Settle'
+import Reports from './pages/Reports'
+import Settings from './pages/Settings'
+import Scan from './pages/Scan'
+import ImportCSV from './pages/ImportCSV'
 import { Toast } from './components/index.jsx'
 
 export default function App() {
   const { user, toast } = useApp()
+
   if (!user) return <><Login /><Toast message={toast} /></>
+
   return (
     <>
       <Layout>

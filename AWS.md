@@ -1,71 +1,77 @@
-# GharKharcha — Complete Backend Architecture v2
-# ═══════════════════════════════════════════════
-# Everything stored in AWS. Nothing critical in localStorage.
-# localStorage = only UI preferences (theme, last selected group).
+# GharKharcha — AWS Backend Reference
+# ═════════════════════════════════════
+# Single source of truth for infrastructure, Lambda code, and deployment status.
+# v1 (familyId-based) is documented at the bottom under Legacy.
 
 ---
 
-## 📐 Data Model
+## 🔑 Keys & Endpoints
 
-### Who owns what
-- User     → owns their own profile + preferences
-- Group    → owned by creator, shared with members
-- Expense  → belongs to a group
-- CashFlow → belongs to a group
-- Member   → belongs to a group
-- Settings (payment types, budgets) → belong to a group
+| Key | Value |
+|---|---|
+| API Gateway URL (v2 — active) | `https://p7olak2xy4.execute-api.us-east-1.amazonaws.com/GK-Stage` |
+| API Gateway URL (v1 — legacy) | `https://15c3jq5fc2.execute-api.ap-south-1.amazonaws.com` |
+| Google OAuth Client ID | `56285835763-s5mk752qj0smuc01hr10k5nu7ii46n1c.apps.googleusercontent.com` |
+| AWS Region (v2) | `us-east-1` (N. Virginia) |
+| AWS Region (v1) | `ap-south-1` (Mumbai) |
+| IAM Role (v2) | `GharKharcha-Lambda-Role` |
 
 ---
 
-## 🗄️ DynamoDB Tables (5 total)
+## 📐 Data Model (v2)
 
-### Table 1: GK-Users
-Stores every user who has ever logged in via Google.
+### Ownership
+- **User** → profile + preferences (theme, currency)
+- **Group** → owned by creator, shared with members; holds payment types, budgets
+- **Expense** → belongs to a group
+- **CashFlow** → belongs to a group
+- **Member** → belongs to a group (user ↔ group join record)
 
+---
+
+## 🗄️ DynamoDB Tables (v2 — 5 tables)
+
+### GK-Users
 | Key | Type | Description |
 |---|---|---|
-| `userId` (PK) | String | Google email address |
-| `name` | String | Full name from Google |
+| `userId` (PK) | String | Google email |
+| `name` | String | Full name |
 | `picture` | String | Google profile photo URL |
-| `verifiedAt` | String | ISO timestamp of first login |
-| `lastLoginAt` | String | ISO timestamp of last login |
+| `verifiedAt` | String | ISO — first login |
+| `lastLoginAt` | String | ISO — most recent login |
 | `defaultGroupId` | String | Last selected group |
 | `theme` | String | light / dark |
 | `currency` | String | ₹ / $ / € |
 
 ```
-Partition key: userId (String)   ← Google email
-No sort key needed
+PK: userId (String)   ← Google email
+No sort key
 ```
 
 ---
 
-### Table 2: GK-Groups
-One record per group. Stores all group metadata.
-
+### GK-Groups
 | Key | Type | Description |
 |---|---|---|
 | `groupId` (PK) | String | Unique group ID |
-| `name` | String | Group name e.g. "Patil Home" |
-| `description` | String | Optional description |
+| `name` | String | e.g. "family Home" |
+| `description` | String | Optional |
 | `type` | String | home / trip / office / other |
-| `icon` | String | Emoji icon |
+| `icon` | String | Emoji |
 | `createdBy` | String | Email of creator |
 | `createdAt` | String | ISO timestamp |
 | `paymentTypes` | List | ["UPI","Cash","Credit Card",...] |
-| `budgets` | Map | {Groceries: 15000, Utilities: 8000} |
+| `budgets` | Map | {Groceries: 15000, Utilities: 8000, ...} |
 | `currency` | String | Default currency for group |
 
 ```
-Partition key: groupId (String)
-No sort key needed
+PK: groupId (String)
+No sort key
 ```
 
 ---
 
-### Table 3: GK-Members
-Maps users to groups. One record per user per group.
-
+### GK-Members
 | Key | Type | Description |
 |---|---|---|
 | `groupId` (PK) | String | Which group |
@@ -76,59 +82,52 @@ Maps users to groups. One record per user per group.
 | `textColor` | String | Avatar text color |
 | `initials` | String | e.g. "RP" |
 | `joinedAt` | String | ISO timestamp |
-| `invitedBy` | String | Email of who invited |
+| `invitedBy` | String | Email of inviter |
 
 ```
-Partition key: groupId (String)
-Sort key:      userId  (String)
-```
+PK: groupId (String)
+SK: userId  (String)
 
-GSI — for finding all groups a user belongs to:
-```
-GSI name:  userId-index
-PK:        userId
+GSI — userId-index (for finding all groups a user belongs to):
+  PK: userId
 ```
 
 ---
 
-### Table 4: GK-Expenses
-All expenses across all groups.
-
+### GK-Expenses
 | Key | Type | Description |
 |---|---|---|
-| `groupId` (PK) | String | Which group this belongs to |
-| `expenseId` (SK) | String | Unique expense ID (timestamp) |
+| `groupId` (PK) | String | Which group |
+| `expenseId` (SK) | String | Unique ID (ISO timestamp + random) |
 | `desc` | String | Description |
 | `amount` | Number | Amount |
 | `currency` | String | ₹ / $ / € |
 | `date` | String | YYYY-MM-DD |
 | `time` | String | HH:MM (optional) |
-| `category` | String | Groceries / Utilities etc. |
-| `paymentType` | String | UPI / Cash etc. |
-| `paidBy` | String | Member name who paid |
-| `paidByUserId` | String | Email of who paid |
+| `category` | String | Groceries / Utilities / ... |
+| `paymentType` | String | UPI / Cash / ... |
+| `paidBy` | String | Member name |
+| `paidByUserId` | String | Email of payer |
 | `shared` | String | null / member name / "group" |
 | `recurring` | String | null / daily / weekly / monthly / yearly |
-| `notes` | String | Optional notes |
-| `receiptUrl` | String | Google Photos URL (Phase 2) |
-| `createdBy` | String | Email of who created this record |
+| `notes` | String | Optional |
+| `receiptUrl` | String | Photo URL (Phase 2) |
+| `createdBy` | String | Email |
 | `createdAt` | String | ISO timestamp |
 | `updatedAt` | String | ISO timestamp |
 
 ```
-Partition key: groupId   (String)
-Sort key:      expenseId (String)
+PK: groupId   (String)
+SK: expenseId (String)
 ```
 
 ---
 
-### Table 5: GK-CashFlow
-Cash in / cash out entries per group.
-
+### GK-CashFlow
 | Key | Type | Description |
 |---|---|---|
 | `groupId` (PK) | String | Which group |
-| `entryId` (SK) | String | Unique entry ID |
+| `entryId` (SK) | String | Unique ID |
 | `cfType` | String | in / out |
 | `amount` | Number | Amount |
 | `currency` | String | ₹ / $ / € |
@@ -139,44 +138,45 @@ Cash in / cash out entries per group.
 | `createdAt` | String | ISO timestamp |
 
 ```
-Partition key: groupId (String)
-Sort key:      entryId (String)
+PK: groupId (String)
+SK: entryId (String)
 ```
 
 ---
 
-## 🛣️ API Routes (12 total)
+## 🛣️ API Routes (v2 — 15 total)
 
 | Method | Path | Lambda | Description |
 |---|---|---|---|
-| POST | `/user` | GK-SaveUser | Create/update user on login |
-| GET | `/user` | GK-GetUser | Get user profile + groups |
-| POST | `/group` | GK-SaveGroup | Create new group |
-| GET | `/group` | GK-GetGroup | Get group details + settings |
-| PUT | `/group` | GK-UpdateGroup | Update payment types, budgets |
+| POST | `/user` | GK-SaveUser | Create / update user on login |
+| GET | `/user` | GK-GetUser | Profile + all groups |
+| POST | `/group` | GK-SaveGroup | Create group |
+| GET | `/group` | GK-GetGroup | Group details + settings |
+| PUT | `/group` | GK-UpdateGroup | Update payment types, budgets, name |
 | DELETE | `/group` | GK-DeleteGroup | Delete group |
-| POST | `/member` | GK-SaveMember | Add member to group |
-| GET | `/members` | GK-GetMembers | Get all members of a group |
-| DELETE | `/member` | GK-DeleteMember | Remove member from group |
+| POST | `/member` | GK-SaveMember | Add member |
+| GET | `/members` | GK-GetMembers | All members of a group |
+| DELETE | `/member` | GK-DeleteMember | Remove member |
 | POST | `/expense` | GK-SaveExpense | Add expense |
-| GET | `/expenses` | GK-GetExpenses | Get expenses (with month filter) |
+| GET | `/expenses` | GK-GetExpenses | Expenses (optional month filter) |
 | PUT | `/expense` | GK-UpdateExpense | Edit expense |
 | DELETE | `/expense` | GK-DeleteExpense | Delete expense |
+| POST | `/expenses/batch` | GK-BatchSaveExpenses | Bulk import (CSV) |
 | POST | `/cashflow` | GK-SaveCashFlow | Add cash in/out |
-| GET | `/cashflow` | GK-GetCashFlow | Get cash flow entries |
+| GET | `/cashflow` | GK-GetCashFlow | Cash flow entries |
+
+CORS: Allow-Origin `*` · Allow-Methods `GET, POST, PUT, DELETE, OPTIONS` · Allow-Headers `Content-Type`
 
 ---
 
-## ⚡ Lambda Functions
+## ⚡ Lambda Functions (v2)
 
-### Runtime: Node.js 20.x
-### Role: GharKharcha-Lambda-Role
-### Tables needed: GK-Users, GK-Groups, GK-Members, GK-Expenses, GK-CashFlow
+**Runtime:** Node.js 20.x  
+**Role:** GharKharcha-Lambda-Role (AmazonDynamoDBFullAccess + CloudWatchLogsFullAccess)
 
 ---
 
-### 1. GK-SaveUser
-POST /user — called on every Google login
+### GK-SaveUser — POST /user
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -190,7 +190,6 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body);
     const now = new Date().toISOString();
 
-    // Get existing user to preserve defaultGroupId
     const existing = await db.send(new GetCommand({ TableName: "GK-Users", Key: { userId: body.email } }));
 
     const item = {
@@ -205,8 +204,6 @@ export const handler = async (event) => {
     };
 
     await db.send(new PutCommand({ TableName: "GK-Users", Item: item }));
-
-    // Also fetch user's groups via GSI
     return { statusCode: 200, headers: H, body: JSON.stringify({ success: true, user: item }) };
   } catch (err) {
     return { statusCode: 500, headers: H, body: JSON.stringify({ error: err.message }) };
@@ -216,8 +213,7 @@ export const handler = async (event) => {
 
 ---
 
-### 2. GK-GetUser
-GET /user?userId=email@gmail.com — get profile + all groups user belongs to
+### GK-GetUser — GET /user?userId=email@gmail.com
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -231,10 +227,8 @@ export const handler = async (event) => {
     const userId = event.queryStringParameters?.userId;
     if (!userId) return { statusCode: 400, headers: H, body: JSON.stringify({ error: "userId required" }) };
 
-    // Get user profile
     const userResult = await db.send(new GetCommand({ TableName: "GK-Users", Key: { userId } }));
 
-    // Get all groups this user is a member of (via GSI)
     const memberResult = await db.send(new QueryCommand({
       TableName: "GK-Members",
       IndexName: "userId-index",
@@ -242,7 +236,6 @@ export const handler = async (event) => {
       ExpressionAttributeValues: { ":uid": userId }
     }));
 
-    // Fetch each group's details
     const groups = [];
     for (const membership of (memberResult.Items || [])) {
       const groupResult = await db.send(new GetCommand({ TableName: "GK-Groups", Key: { groupId: membership.groupId } }));
@@ -258,8 +251,7 @@ export const handler = async (event) => {
 
 ---
 
-### 3. GK-SaveGroup
-POST /group — create new group
+### GK-SaveGroup — POST /group
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -275,7 +267,7 @@ const DEFAULT_BUDGETS = { Groceries: 15000, Utilities: 8000, Transport: 5000, En
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
-    const now  = new Date().toISOString();
+    const now = new Date().toISOString();
     const groupId = body.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") + "-" + Date.now().toString().slice(-6);
 
     const group = {
@@ -316,8 +308,7 @@ export const handler = async (event) => {
 
 ---
 
-### 4. GK-GetGroup
-GET /group?groupId=xxx — get group with settings
+### GK-GetGroup — GET /group?groupId=xxx
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -329,7 +320,7 @@ const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": 
 export const handler = async (event) => {
   try {
     const groupId = event.queryStringParameters?.groupId;
-    const result  = await db.send(new GetCommand({ TableName: "GK-Groups", Key: { groupId } }));
+    const result = await db.send(new GetCommand({ TableName: "GK-Groups", Key: { groupId } }));
     return { statusCode: 200, headers: H, body: JSON.stringify({ group: result.Item || null }) };
   } catch (err) {
     return { statusCode: 500, headers: H, body: JSON.stringify({ error: err.message }) };
@@ -339,8 +330,7 @@ export const handler = async (event) => {
 
 ---
 
-### 5. GK-UpdateGroup
-PUT /group — update payment types, budgets, name etc.
+### GK-UpdateGroup — PUT /group
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -352,7 +342,6 @@ const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": 
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
-
     await db.send(new UpdateCommand({
       TableName: "GK-Groups",
       Key: { groupId: body.groupId },
@@ -367,7 +356,6 @@ export const handler = async (event) => {
         ":ua": new Date().toISOString(),
       }
     }));
-
     return { statusCode: 200, headers: H, body: JSON.stringify({ success: true }) };
   } catch (err) {
     return { statusCode: 500, headers: H, body: JSON.stringify({ error: err.message }) };
@@ -377,8 +365,29 @@ export const handler = async (event) => {
 
 ---
 
-### 6. GK-SaveMember
-POST /member — add member to group
+### GK-DeleteGroup — DELETE /group
+
+```javascript
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+
+const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Content-Type": "application/json" };
+
+export const handler = async (event) => {
+  try {
+    const body = JSON.parse(event.body);
+    await db.send(new DeleteCommand({ TableName: "GK-Groups", Key: { groupId: body.groupId } }));
+    return { statusCode: 200, headers: H, body: JSON.stringify({ success: true }) };
+  } catch (err) {
+    return { statusCode: 500, headers: H, body: JSON.stringify({ error: err.message }) };
+  }
+};
+```
+
+---
+
+### GK-SaveMember — POST /member
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -411,8 +420,7 @@ export const handler = async (event) => {
 
 ---
 
-### 7. GK-GetMembers
-GET /members?groupId=xxx
+### GK-GetMembers — GET /members?groupId=xxx
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -424,7 +432,7 @@ const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": 
 export const handler = async (event) => {
   try {
     const groupId = event.queryStringParameters?.groupId;
-    const result  = await db.send(new QueryCommand({
+    const result = await db.send(new QueryCommand({
       TableName: "GK-Members",
       KeyConditionExpression: "groupId = :gid",
       ExpressionAttributeValues: { ":gid": groupId }
@@ -438,8 +446,29 @@ export const handler = async (event) => {
 
 ---
 
-### 8. GK-SaveExpense
-POST /expense
+### GK-DeleteMember — DELETE /member
+
+```javascript
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+
+const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Content-Type": "application/json" };
+
+export const handler = async (event) => {
+  try {
+    const body = JSON.parse(event.body);
+    await db.send(new DeleteCommand({ TableName: "GK-Members", Key: { groupId: body.groupId, userId: body.userId } }));
+    return { statusCode: 200, headers: H, body: JSON.stringify({ success: true }) };
+  } catch (err) {
+    return { statusCode: 500, headers: H, body: JSON.stringify({ error: err.message }) };
+  }
+};
+```
+
+---
+
+### GK-SaveExpense — POST /expense
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -451,7 +480,7 @@ const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": 
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
-    const now  = new Date().toISOString();
+    const now = new Date().toISOString();
     const item = {
       groupId: body.groupId,
       expenseId: now + "-" + Math.random().toString(36).slice(2, 7),
@@ -482,8 +511,7 @@ export const handler = async (event) => {
 
 ---
 
-### 9. GK-GetExpenses
-GET /expenses?groupId=xxx&month=2026-04
+### GK-GetExpenses — GET /expenses?groupId=xxx&month=2026-04
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -505,7 +533,7 @@ export const handler = async (event) => {
     }));
 
     let items = result.Items || [];
-    if (month) items = items.filter(e => e.date && e.date.startsWith(month));
+    if (month) items = items.filter(e => e.date?.startsWith(month));
 
     return { statusCode: 200, headers: H, body: JSON.stringify({ expenses: items }) };
   } catch (err) {
@@ -516,8 +544,7 @@ export const handler = async (event) => {
 
 ---
 
-### 10. GK-UpdateExpense
-PUT /expense
+### GK-UpdateExpense — PUT /expense
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -551,8 +578,7 @@ export const handler = async (event) => {
 
 ---
 
-### 11. GK-DeleteExpense
-DELETE /expense
+### GK-DeleteExpense — DELETE /expense
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -574,8 +600,58 @@ export const handler = async (event) => {
 
 ---
 
-### 12. GK-SaveCashFlow
-POST /cashflow
+### GK-BatchSaveExpenses — POST /expenses/batch
+
+```javascript
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+
+const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Content-Type": "application/json" };
+
+export const handler = async (event) => {
+  try {
+    const { groupId, createdBy, currency, expenses } = JSON.parse(event.body);
+    if (!groupId || !expenses?.length) return { statusCode: 400, headers: H, body: JSON.stringify({ error: "groupId and expenses required" }) };
+
+    let saved = 0, failed = 0;
+    for (const row of expenses) {
+      try {
+        const now = new Date().toISOString();
+        await db.send(new PutCommand({
+          TableName: "GK-Expenses",
+          Item: {
+            groupId,
+            expenseId: now + "-" + Math.random().toString(36).slice(2, 7),
+            desc: row.description || row.desc || "Imported",
+            amount: Number(row.amount),
+            currency: row.currency || currency || "₹",
+            date: row.date,
+            time: row.time || null,
+            category: row.category || "Other",
+            paymentType: row.paymenttype || row.paymentType || "Cash",
+            paidBy: row.paidby || row.paidBy || "",
+            shared: row.shared || null,
+            notes: row.notes || "CSV import",
+            createdBy: createdBy || "import",
+            createdAt: now,
+            updatedAt: now,
+          }
+        }));
+        saved++;
+      } catch { failed++; }
+    }
+
+    return { statusCode: 200, headers: H, body: JSON.stringify({ success: failed === 0, saved, failed, total: expenses.length }) };
+  } catch (err) {
+    return { statusCode: 500, headers: H, body: JSON.stringify({ error: err.message }) };
+  }
+};
+```
+
+---
+
+### GK-SaveCashFlow — POST /cashflow
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -587,7 +663,7 @@ const H = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": 
 export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
-    const now  = new Date().toISOString();
+    const now = new Date().toISOString();
     const item = {
       groupId: body.groupId,
       entryId: now + "-" + Math.random().toString(36).slice(2, 7),
@@ -610,8 +686,7 @@ export const handler = async (event) => {
 
 ---
 
-### 13. GK-GetCashFlow
-GET /cashflow?groupId=xxx&month=2026-04
+### GK-GetCashFlow — GET /cashflow?groupId=xxx&month=2026-04
 
 ```javascript
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -641,62 +716,95 @@ export const handler = async (event) => {
 
 ---
 
-## ✅ Setup Checklist
+## ✅ Deployment Checklist (v2)
 
-### DynamoDB Tables to create
+### DynamoDB
 - [ ] GK-Users       (PK: userId)
 - [ ] GK-Groups      (PK: groupId)
-- [ ] GK-Members     (PK: groupId, SK: userId) + GSI: userId-index
+- [ ] GK-Members     (PK: groupId, SK: userId) + GSI: userId-index (PK: userId)
 - [ ] GK-Expenses    (PK: groupId, SK: expenseId)
 - [ ] GK-CashFlow    (PK: groupId, SK: entryId)
 
-### Lambda Functions to create (all Node.js 20.x)
+### IAM — GharKharcha-Lambda-Role
+- [ ] AmazonDynamoDBFullAccess
+- [ ] CloudWatchLogsFullAccess
+
+### Lambda Functions
 - [ ] GK-SaveUser
 - [ ] GK-GetUser
 - [ ] GK-SaveGroup
 - [ ] GK-GetGroup
 - [ ] GK-UpdateGroup
+- [ ] GK-DeleteGroup
 - [ ] GK-SaveMember
 - [ ] GK-GetMembers
+- [ ] GK-DeleteMember
 - [ ] GK-SaveExpense
 - [ ] GK-GetExpenses
 - [ ] GK-UpdateExpense
 - [ ] GK-DeleteExpense
+- [ ] GK-BatchSaveExpenses
 - [ ] GK-SaveCashFlow
 - [ ] GK-GetCashFlow
 
-### API Gateway Routes
+### API Gateway
 - [ ] POST   /user
 - [ ] GET    /user
 - [ ] POST   /group
 - [ ] GET    /group
 - [ ] PUT    /group
+- [ ] DELETE /group
 - [ ] POST   /member
 - [ ] GET    /members
+- [ ] DELETE /member
 - [ ] POST   /expense
 - [ ] GET    /expenses
 - [ ] PUT    /expense
 - [ ] DELETE /expense
+- [ ] POST   /expenses/batch
 - [ ] POST   /cashflow
 - [ ] GET    /cashflow
 
-### IAM Role (GharKharcha-Lambda-Role) needs access to
-- [ ] GK-Users
-- [ ] GK-Groups
-- [ ] GK-Members (including GSI)
-- [ ] GK-Expenses
-- [ ] GK-CashFlow
+---
+
+## 💰 Cost Summary
+
+| Service | Free Tier | Estimated Usage | Cost |
+|---|---|---|---|
+| DynamoDB | 25 GB forever | < 1 MB | ₹0 |
+| Lambda | 1M req/month | ~500/month | ₹0 |
+| API Gateway | 1M req/12mo | ~500/month | ₹0 |
+| Amplify | 1000 builds/mo | ~5/month | ₹0 |
+| Google OAuth | Free | Free | ₹0 |
+| **Total** | | | **₹0/month** |
 
 ---
 
-## 📱 What localStorage stores (UI only — safe to lose)
-- `gk_user`         — cached login session (re-fetched from DB on next login)
-- `gk_last_group`   — last selected groupId (just UX convenience)
-- `gk_theme`        — dark/light (synced to DB on change)
+## 📱 What localStorage stores (UI convenience only — safe to clear)
 
-## ☁️ What DynamoDB stores (everything important)
-- User profiles + preferences
-- Groups (name, type, payment types, budgets, currency)
-- Group members + roles
-- All expenses
-- All cash flow entries
+| Key | Value |
+|---|---|
+| `gk_session` | Cached login (email, name, picture) — re-fetched from DB on app load |
+
+---
+
+## 🚀 Phase 2 Roadmap
+
+- [ ] Real Google Cloud Vision OCR for receipt scanning
+- [ ] Google Photos receipt storage
+- [ ] Google Sheets auto-backup export
+- [ ] WhatsApp chat import (Marathi/English)
+- [ ] Push notifications
+
+---
+
+## 📦 Legacy — v1 Architecture (ap-south-1, familyId-based)
+
+> These resources exist in AWS Mumbai region under the old single-family design.
+> **Do not use for new development.** Kept here for reference only.
+
+- API Gateway: `https://15c3jq5fc2.execute-api.ap-south-1.amazonaws.com`
+- Tables: `GharKharcha-Expenses` (PK: familyId, SK: expenseId), `GharKharcha-Members` (PK: familyId, SK: email)
+- Lambdas deployed: GharKharcha-SaveExpense, GharKharcha-GetExpenses, GharKharcha-DeleteExpense, GharKharcha-UpdateExpense
+- Lambdas pending: GharKharcha-SaveMember, GharKharcha-GetMembers
+- Key difference: used `familyId` instead of `groupId`; no user/group/cashflow tables

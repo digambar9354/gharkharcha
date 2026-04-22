@@ -1,19 +1,22 @@
-// ── Toast ──
+import { CAT_ICONS } from '../constants/index.js'
+
+export { CAT_ICONS }
+
+// ── Toast ──────────────────────────────────────────────────────────────────
 export function Toast({ message }) {
   if (!message) return null
   return <div className="toast show">{message}</div>
 }
 export default Toast
 
-// ── ExpenseRow ──
-export const CAT_ICONS = { Groceries:'🛒', Utilities:'⚡', Transport:'🚗', Entertainment:'🎬', Medical:'💊', Construction:'🏗️', Other:'📋' }
-
-export function ExpenseRow({ expense: e, onEdit, onDelete, currency = '₹' }) {
+// ── ExpenseRow ─────────────────────────────────────────────────────────────
+export function ExpenseRow({ expense: e, onEdit, onDelete, currency = '₹', style }) {
   const isRec    = e.recurring && e.recurring !== 'none'
   const isShared = e.shared && e.shared !== 'none'
   const dateTime = e.time ? `${fmtDate(e.date)} ${e.time}` : fmtDate(e.date)
+
   return (
-    <div className="exp-row">
+    <div className="exp-row" style={style}>
       <div className="exp-ic">{CAT_ICONS[e.category] || '📋'}</div>
       <div>
         <div className="exp-name">{e.desc}</div>
@@ -32,7 +35,7 @@ export function ExpenseRow({ expense: e, onEdit, onDelete, currency = '₹' }) {
   )
 }
 
-// ── MetricCard ──
+// ── MetricCard ─────────────────────────────────────────────────────────────
 export function MetricCard({ label, value, sub, variant = '' }) {
   return (
     <div className={`metric ${variant}`}>
@@ -43,7 +46,7 @@ export function MetricCard({ label, value, sub, variant = '' }) {
   )
 }
 
-// ── ConfirmModal ──
+// ── ConfirmModal ───────────────────────────────────────────────────────────
 export function ConfirmModal({ message, onConfirm, onCancel }) {
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onCancel()}>
@@ -59,7 +62,7 @@ export function ConfirmModal({ message, onConfirm, onCancel }) {
   )
 }
 
-// ── Helpers ──
+// ── Helpers ────────────────────────────────────────────────────────────────
 export function fmtDate(s) {
   if (!s) return ''
   return new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
